@@ -19,6 +19,14 @@ const routes = [
     }
   },
   {
+    path: '/digital-dine',
+    component: ElectionPage,
+    meta: {
+      title: 'Location',
+      layout: HomeLayout
+    }
+  },
+  {
     path: '/bar',
     component: BarPage,
     meta: {
