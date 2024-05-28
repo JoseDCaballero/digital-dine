@@ -7,6 +7,7 @@ import {
   RestaurantPage,
   UploadPage,
   BuploadPage,
+  NotFound,
 } from './pages/index.js';
 
 const routes = [
@@ -55,6 +56,14 @@ const routes = [
     component: BuploadPage,
     meta: {
       title: 'Subir imagenes del bar',
+      layout: DefaultLayout
+    }
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    component: NotFound,
+    meta: {
+      title: 'Página no encontrada',
       layout: DefaultLayout
     }
   },

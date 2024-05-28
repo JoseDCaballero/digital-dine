@@ -20,7 +20,7 @@ const images = ref([]);
 
 const fetchImages = async () => {
   try {
-    const response = await axios.get('http://localhost:8000/files/');
+    const response = await axios.get(/*'http://localhost:8000*/VITE_API_URL+'/files/');
     images.value = response.data;
   } catch (error) {
     console.error('Error fetching images:', error);

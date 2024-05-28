@@ -7,7 +7,7 @@
         </div>
       </div>
       <div v-else>
-        <p>No hay imágenes para mostrar.</p>
+        <p>No drinks available</p>
       </div>      
     </div>
   </template>
@@ -20,7 +20,7 @@
   
   const fetchImages = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/bfiles/');
+      const response = await axios.get(/*'http://localhost:8000*/VITE_API_URL+'/bfiles/');
       images.value = response.data;
     } catch (error) {
       console.error('Error al obtener las imágenes:', error);
