@@ -1,6 +1,8 @@
 <template>
-    <div>
-      <h1>Our available drinks</h1>
+  <div>
+    <h1>Our available drinks</h1>
+    <Loading v-if="loading" />
+    <div v-else>
       <div v-if="images.length">
         <div v-for="(image, index) in images" :key="index" class="image-container">
           <img :src="image" alt="Imagen en buploads" />
@@ -8,37 +10,42 @@
       </div>
       <div v-else>
         <p>No drinks available</p>
-      </div>      
+      </div>
     </div>
-  </template>
-  
-  <script setup>
-  import { ref, onMounted } from 'vue';
-  import axios from 'axios';
-  
-  const images = ref([]);
-  
-  const fetchImages = async () => {
-    try {
-      const response = await axios.get('http://localhost:8000/bfiles/');
-      images.value = response.data;
-    } catch (error) {
-      console.error('Error al obtener las imágenes:', error);
-    }
-  };
-  
-  onMounted(() => {
-    fetchImages();
-  });
-  </script>
-  
-  <style scoped>
-  .image-container {
-    display: inline-block;
-    margin: 10px;
-  }
+  </div>
+</template>
 
-  .image-container img {
+<script setup>
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+import Loading from '../components/Loading.vue';
+
+const images = ref([]);
+const loading = ref(true);
+
+const fetchImages = async () => {
+  try {
+    const response = await axios.get(import.meta.env.VITE_API_URL + '/bfiles/');
+    images.value = response.data;
+  } catch (error) {
+    console.error('Error al obtener las imágenes:', error);
+  } finally {
+    loading.value = false;
+  }
+};
+
+onMounted(() => {
+  fetchImages();
+});
+</script>
+
+<style scoped>
+.image-container {
+  display: inline-block;
+  margin: 10px;
+}
+
+.image-container img {
   max-width: 200px;
   height: auto;
   display: block;
@@ -46,5 +53,4 @@
   padding: 10px;
   border-radius: 10px;
 }
-  </style>
-  
+</style>

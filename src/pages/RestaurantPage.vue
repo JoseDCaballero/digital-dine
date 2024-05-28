@@ -1,13 +1,16 @@
 <template>
   <div>
     <h1>Our available dishes</h1>
-    <div v-if="images.length">
-      <div v-for="image in images" :key="image" class="image-container">
-        <img :src="image" alt="Imagen">
-      </div>
-    </div>
+    <Loading v-if="loading" />
     <div v-else>
-      <p>No dishes available</p>
+      <div v-if="images.length">
+        <div v-for="image in images" :key="image" class="image-container">
+          <img :src="image" alt="Imagen">
+        </div>
+      </div>
+      <div v-else>
+        <p>No dishes available</p>
+      </div>
     </div>
   </div>
 </template>
@@ -15,15 +18,19 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+import Loading from '../components/Loading.vue'; // Asegúrate de que la ruta es correcta
 
 const images = ref([]);
+const loading = ref(true);
 
 const fetchImages = async () => {
   try {
-    const response = await axios.get('http://localhost:8000/files/');
+    const response = await axios.get(import.meta.env.VITE_API_URL + '/files/');
     images.value = response.data;
   } catch (error) {
     console.error('Error fetching images:', error);
+  } finally {
+    loading.value = false;
   }
 };
 

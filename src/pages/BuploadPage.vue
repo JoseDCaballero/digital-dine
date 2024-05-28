@@ -28,7 +28,7 @@
   
     if (conf) {
       try {
-        const response = await axios.post('http://localhost:8000/bupload/', formData, {
+        const response = await axios.post(import.meta.env.VITE_API_URL+'/bupload/', formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
