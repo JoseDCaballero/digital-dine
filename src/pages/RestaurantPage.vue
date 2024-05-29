@@ -5,12 +5,20 @@
     <div v-else>
       <div v-if="images.length">
         <div v-for="image in images" :key="image" class="image-container">
-          <img :src="image" alt="Imagen">
+          <img :src="image" alt="Imagen" @click="expandImage(image)">
+          <p>Platillo</p>
+          <p>Este platillo sabe bueno</p>
+          <p>$150.00 MXN</p>
+          <button class="cross-button" @click="addToCart"></button>
         </div>
       </div>
       <div v-else>
         <p>No dishes available</p>
       </div>
+    </div>
+    <!-- aqui se expanden las imagenes -->
+    <div v-if="expandedImage" class="expanded-image-overlay" @click="closeExpandedImage">
+      <img :src="expandedImage" alt="Expanded Image">
     </div>
   </div>
 </template>
@@ -18,9 +26,10 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
-import Loading from '../components/Loading.vue'; // Asegúrate de que la ruta es correcta
+import Loading from '../components/Loading.vue'; 
 
 const images = ref([]);
+const expandedImage = ref(null);
 const loading = ref(true);
 
 const fetchImages = async () => {
@@ -34,6 +43,21 @@ const fetchImages = async () => {
   }
 };
 
+const addToCart = () => {
+  let conf = confirm("¿Desea añadir ${{hdhdjs}}?")
+  if (conf) {
+    alert("Añadido ${{hdhdjs}}")
+  }
+}
+
+const expandImage = (image) => {
+  expandedImage.value = image;
+}
+
+const closeExpandedImage = () => {
+  expandedImage.value = null;
+}
+
 onMounted(() => {
   fetchImages();
 });
@@ -43,14 +67,63 @@ onMounted(() => {
 .image-container {
   display: inline-block;
   margin: 10px;
+  border: 1px solid #000;
 }
 
 .image-container img {
-  max-width: 200px;
-  height: auto;
-  display: block;
-  border: 1px solid #000;
+  /* max-width: 200px; */
+  width:35vh;
+  height: 20vh;
+  display: block;  
   padding: 10px;
   border-radius: 10px;
+  cursor: pointer;
+}
+
+.cross-button {
+    width: 40px;
+    height: 40px;
+    border: none;    
+    position: relative;
+    cursor: pointer;
+    background-color: rgb(255, 255, 255);
+  }
+  
+  .cross-button::before, .cross-button::after {
+    content: '';
+    position: absolute;
+    background-color: #000;
+  }
+  
+  .cross-button::before {
+    width: 1px;
+    height: 25px;
+    top: 7px;
+    left: 20px;
+  }
+  
+  .cross-button::after {
+    width: 25px;
+    height: 1px;
+    top: 20px;
+    left: 7px;
+  }
+
+.expanded-image-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.expanded-image-overlay img {
+  max-width: 90%;
+  max-height: 90%;
 }
 </style>
