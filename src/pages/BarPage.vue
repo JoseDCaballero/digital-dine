@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>Our available drinks</h1>
-    <Loading v-if="loading" />
+    <Load v-if="loading" />
     <div v-else>
       <div v-if="images.length">
         <div v-for="(image, index) in images" :key="index" class="image-container">
@@ -26,7 +26,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
-import Loading from '../components/Loading.vue';
+import Load from '../components/Load.vue';
 
 const images = ref([]);
 const expandedImage = ref(null);
