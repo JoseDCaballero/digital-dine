@@ -1,7 +1,7 @@
 <template>
   <div class="card-container">
     <h1>Our available dishes</h1>
-    <Load v-if="loading" />
+    <Loading v-if="loading" />
     <div v-else>
       <div v-if="images.length" class="card-wrapper">
         <div v-for="(image, index) in images" :key="index" class="card">
@@ -35,7 +35,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
-import Load from '../components/Load.vue';
+import Loading from '../components/Loading.vue';
 
 const images = ref([]);
 const expandedImage = ref(null);
