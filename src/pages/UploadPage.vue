@@ -7,6 +7,11 @@
       <input type="file" @change="handleFileUpload" id="file-upload" class="file-input">
       <label for="file-upload" class="file-label">Seleccionar archivo</label>
     </div>
+    <div class="input-section">
+      <input type="text" v-model="name" placeholder="Nombre del platillo" class="input-field">
+      <input type="text" v-model="description" placeholder="Descripción del platillo" class="input-field">
+      <input type="number" v-model="price" placeholder="Precio del platillo" class="input-field">
+    </div>
     <button @click="uploadFile" class="btn-upload">Subir</button>
   </div>
 </template>
@@ -17,6 +22,9 @@ import axios from 'axios';
 
 const selectedFile = ref(null);
 const imagePreview = ref(null);
+const name = ref('');
+const description = ref('');
+const price = ref(0);
 
 const handleFileUpload = (event) => {
   selectedFile.value = event.target.files[0];
@@ -37,8 +45,11 @@ const uploadFile = async () => {
 
   let formData = new FormData();
   formData.append('file', selectedFile.value);
+  formData.append('name', name.value);
+  formData.append('description', description.value);
+  formData.append('price', price.value);
 
-  let val = confirm("¿La imagen seleccionada es la correcta a subir?");
+  let val = confirm("¿Estás seguro de que deseas subir este platillo?");
 
   if (val) {
     try {
@@ -47,11 +58,11 @@ const uploadFile = async () => {
           'Content-Type': 'multipart/form-data'
         }
       });
-      alert("La imagen se subió correctamente");
+      alert("El platillo se subió correctamente");
       console.log(response.data);
     } catch (error) {
       console.error('Error uploading file:', error);
-      alert('Error al subir el archivo');
+      alert('Error al subir el platillo');
     }
   }
 };
@@ -71,6 +82,10 @@ const uploadFile = async () => {
 .upload-section {
   margin-bottom: 20px;
   position: relative;
+}
+
+.input-section {
+  margin-bottom: 20px;
 }
 
 .file-input {
@@ -102,6 +117,14 @@ const uploadFile = async () => {
   border: 1px solid #ddd;
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.input-field {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
 }
 
 .btn-upload {

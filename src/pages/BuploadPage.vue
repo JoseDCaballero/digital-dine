@@ -7,6 +7,11 @@
       <input type="file" @change="onFileChange" id="file-upload" class="file-input">
       <label for="file-upload" class="file-label">Seleccionar archivo</label>
     </div>
+    <div class="input-section">
+      <input type="text" v-model="name" placeholder="Nombre de la bebida" class="input-field">
+      <input type="text" v-model="description" placeholder="Descripción de la bebida" class="input-field">
+      <input type="number" v-model="price" placeholder="Precio de la bebida" class="input-field">
+    </div>
     <button @click="uploadFile" class="btnsubir">Subir</button>
   </div>
 </template>
@@ -17,6 +22,9 @@ import axios from 'axios';
 
 const selectedFile = ref(null);
 const imagePreview = ref(null);
+const name = ref('');
+const description = ref('');
+const price = ref(0);
 
 const onFileChange = (event) => {
   selectedFile.value = event.target.files[0];
@@ -37,19 +45,24 @@ const uploadFile = async () => {
 
   const formData = new FormData();
   formData.append('file', selectedFile.value);
+  formData.append('name', name.value);
+  formData.append('description', description.value);
+  formData.append('price', price.value);
 
-  let conf = confirm("¿Se seleccionó la imagen correcta?");
+  let conf = confirm("¿Estás seguro de que deseas subir esta bebida?");
 
   if (conf) {
     try {
-      const response = await axios.post(import.meta.env.VITE_API_URL+'/bupload/', formData, {
+      const response = await axios.post(import.meta.env.VITE_API_URL + '/bupload/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
-      alert("Imagen subida correctamente");
+      alert("La bebida se subió correctamente");
+      console.log(response.data);
     } catch (error) {
-      alert("Error al subir el archivo");
+      console.error('Error al subir la bebida:', error);
+      alert('Error al subir la bebida');
     }
   }
 };
@@ -70,6 +83,10 @@ const uploadFile = async () => {
 .upload-section {
   margin-bottom: 20px;
   position: relative;
+}
+
+.input-section {
+  margin-bottom: 20px;
 }
 
 .file-input {
@@ -101,6 +118,14 @@ const uploadFile = async () => {
   border: 1px solid #ddd;
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.input-field {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
 }
 
 .btnsubir {
