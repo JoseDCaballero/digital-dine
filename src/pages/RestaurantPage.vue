@@ -16,8 +16,15 @@
         <p>No dishes available</p>
       </div>
     </div>
-    <!-- aqui se expanden las imagenes -->
-    <div v-if="expandedImage" class="expanded-image-overlay" @click="closeExpandedImage">
+    <!-- Expanded Image Overlay -->
+    <div v-if="expandedImage" class="expanded-image-overlay">
+      <span class="close-icon" @click="closeExpandedImage">
+        <!-- SVG for the close icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </span>
       <img :src="expandedImage" alt="Expanded Image">
     </div>
   </div>
@@ -26,7 +33,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
-import Loading from '../components/Loading.vue'; 
+import Loading from '../components/Loading.vue';
 
 const images = ref([]);
 const expandedImage = ref(null);
@@ -71,8 +78,7 @@ onMounted(() => {
 }
 
 .image-container img {
-  /* max-width: 200px; */
-  width:35vh;
+  width: 35vh;
   height: 20vh;
   display: block;  
   padding: 10px;
@@ -81,33 +87,33 @@ onMounted(() => {
 }
 
 .cross-button {
-    width: 40px;
-    height: 40px;
-    border: none;    
-    position: relative;
-    cursor: pointer;
-    background-color: rgb(255, 255, 255);
-  }
-  
-  .cross-button::before, .cross-button::after {
-    content: '';
-    position: absolute;
-    background-color: #000;
-  }
-  
-  .cross-button::before {
-    width: 1px;
-    height: 25px;
-    top: 7px;
-    left: 20px;
-  }
-  
-  .cross-button::after {
-    width: 25px;
-    height: 1px;
-    top: 20px;
-    left: 7px;
-  }
+  width: 40px;
+  height: 40px;
+  border: none;
+  position: relative;
+  cursor: pointer;
+  background-color: rgb(255, 255, 255);
+}
+
+.cross-button::before, .cross-button::after {
+  content: '';
+  position: absolute;
+  background-color: #000;
+}
+
+.cross-button::before {
+  width: 1px;
+  height: 25px;
+  top: 7px;
+  left: 20px;
+}
+
+.cross-button::after {
+  width: 25px;
+  height: 1px;
+  top: 20px;
+  left: 7px;
+}
 
 .expanded-image-overlay {
   position: fixed;
@@ -125,5 +131,14 @@ onMounted(() => {
 .expanded-image-overlay img {
   max-width: 90%;
   max-height: 90%;
+}
+
+.close-icon {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
 }
 </style>

@@ -17,7 +17,14 @@
       </div>
     </div>
     <!-- Expanded Image Overlay -->
-    <div v-if="expandedImage" class="expanded-image-overlay" @click="closeExpandedImage">
+    <div v-if="expandedImage" class="expanded-image-overlay">
+      <span class="close-icon" @click="closeExpandedImage">
+        <!-- SVG for the close icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </span>
       <img :src="expandedImage" alt="Expanded Drink Image">
     </div>
   </div>
@@ -71,7 +78,6 @@ onMounted(() => {
 }
 
 .image-container img {
-  /* max-width: 200px; */
   width: 35vh;
   height: 20vh;
   display: block;  
@@ -125,5 +131,14 @@ onMounted(() => {
 .expanded-image-overlay img {
   max-width: 90%;
   max-height: 90%;
+}
+
+.close-icon {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
 }
 </style>
