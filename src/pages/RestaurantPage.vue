@@ -1,16 +1,21 @@
 <template>
-  <div class="card-container">
+  <div class="card-container" @click="closeContextMenu">
     <h1>Our available dishes</h1>
     <Loading v-if="loading" />
     <div v-else>
       <div v-if="images.length" class="card-wrapper">
-        <div v-for="(image, index) in images" :key="index" class="card">
-          <img :src="image.url" :alt="image.name" class="card-image" @click="expandImage(image.url)">
+        <div 
+          v-for="(image, index) in images" 
+          :key="index" 
+          class="card" 
+          @click="expandImage(image.url)" 
+          @contextmenu.prevent="showContextMenu($event, image)">
+          <img :src="image.url" :alt="image.name" class="card-image">
           <div class="card-content">
             <h3 class="card-title">{{ image.name }}</h3>
             <p class="card-description">{{ image.description }}</p>
             <p class="card-price">Price: ${{ image.price }}</p>
-            <button class="add-to-cart-button" @click="addToCart(image)">Add to Cart</button>
+            <button class="add-to-cart-button" @click.stop="addToCart(image)">Add to Cart</button>
           </div>
         </div>
       </div>
@@ -29,6 +34,33 @@
       </span>
       <img :src="expandedImage" alt="Expanded Image">
     </div>
+    <!-- Context Menu -->
+    <div v-if="contextMenuVisible" :style="{ top: `${contextMenuY}px`, left: `${contextMenuX}px` }" class="context-menu">
+      <ul>
+        <li @click="handleContextMenuAction('edit')">Edit</li>
+        <li @click="handleContextMenuAction('delete')">Delete</li>
+      </ul>
+    </div>
+    <!-- Edit Form Modal -->
+    <div v-if="editFormVisible" class="edit-form-overlay">
+      <div class="edit-form">
+        <h2>Edit {{ editFormData.name }}</h2>
+        <label>
+          Name:
+          <input v-model="editFormData.name" type="text">
+        </label>
+        <label>
+          Description:
+          <input v-model="editFormData.description" type="text">
+        </label>
+        <label>
+          Price:
+          <input v-model="editFormData.price" type="number">
+        </label>
+        <button @click="updateImage">Save</button>
+        <button @click="cancelEdit">Cancel</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -40,6 +72,18 @@ import Loading from '../components/Loading.vue';
 const images = ref([]);
 const expandedImage = ref(null);
 const loading = ref(true);
+
+const contextMenuVisible = ref(false);
+const contextMenuX = ref(0);
+const contextMenuY = ref(0);
+const selectedImage = ref(null);
+
+const editFormVisible = ref(false);
+const editFormData = ref({
+  name: '',
+  description: '',
+  price: 0
+});
 
 const fetchImages = async () => {
   try {
@@ -57,15 +101,90 @@ const addToCart = (image) => {
   if (conf) {
     alert(`${image.name} añadido al carrito.`);
   }
-}
+};
 
 const expandImage = (imageUrl) => {
   expandedImage.value = imageUrl;
-}
+};
 
 const closeExpandedImage = () => {
   expandedImage.value = null;
-}
+};
+
+const showContextMenu = (event, image) => {
+  contextMenuX.value = event.clientX;
+  contextMenuY.value = event.clientY;
+  contextMenuVisible.value = true;
+  selectedImage.value = image;
+};
+
+const closeContextMenu = () => {
+  contextMenuVisible.value = false;
+};
+
+const handleContextMenuAction = (action) => {
+  console.log(`Context menu action: ${action}`);
+  closeContextMenu();
+  if (action === 'edit') {
+    editImage(selectedImage.value);
+  } else if (action === 'delete') {
+    const conf = confirm(`¿Está seguro de que desea eliminar ${selectedImage.value.name}?`);
+    if (conf) {
+      deleteImage(selectedImage.value);
+    }
+  }
+};
+
+const editImage = (image) => {
+  if (!image) {
+    console.error('No image selected for editing');
+    return;
+  }
+  console.log('Editing image:', image);
+  editFormData.value = { ...image };
+  editFormVisible.value = true;
+};
+
+const cancelEdit = () => {
+  editFormVisible.value = false;
+};
+
+const updateImage = async () => {
+  try {
+    const { name, description, price } = editFormData.value;
+    await axios.put(`${import.meta.env.VITE_API_URL}/update/${selectedImage.value.filename}`, {
+      name,
+      description,
+      price
+    }, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    const updatedImage = images.value.find(img => img.filename === selectedImage.value.filename);
+    if (updatedImage) {
+      updatedImage.name = name;
+      updatedImage.description = description;
+      updatedImage.price = price;
+    }
+    alert('Image updated successfully');
+    editFormVisible.value = false;
+  } catch (error) {
+    console.error('Error updating image:', error);
+    alert('Error updating image');
+  }
+};
+
+const deleteImage = async (image) => {
+  try {
+    await axios.delete(`${import.meta.env.VITE_API_URL}/files/${image.filename}`);
+    images.value = images.value.filter(img => img.filename !== image.filename);
+    alert(`${image.name} eliminado correctamente.`);
+  } catch (error) {
+    console.error('Error eliminando la imagen:', error);
+    alert('Hubo un error al eliminar la imagen.');
+  }
+};
 
 onMounted(() => {
   fetchImages();
@@ -73,6 +192,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* Estilos previos */
 .card-container {
   padding: 20px;
 }
@@ -177,5 +297,87 @@ onMounted(() => {
   width: 30px;
   height: 30px;
   cursor: pointer;
+}
+
+/* Context Menu Styles */
+.context-menu {
+  position: absolute;
+  background-color: #333;
+  color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 10000;
+  overflow: hidden;
+  padding: 8px 0;
+  min-width: 150px;
+}
+
+.context-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.context-menu li {
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.context-menu li:hover {
+  background-color: #555;
+}
+
+/* Edit Form Styles */
+.edit-form-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10001;
+}
+
+.edit-form {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.edit-form h2 {
+  margin-top: 0;
+}
+
+.edit-form label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.edit-form input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.edit-form button {
+  padding: 10px 15px;
+  border: none;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-right: 10px;
+}
+
+.edit-form button:hover {
+  background-color: #0056b3;
 }
 </style>
