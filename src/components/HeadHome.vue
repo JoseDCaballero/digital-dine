@@ -1,25 +1,100 @@
 <template>
+  <div>
     <header>
       <h1>DigitalDine</h1>
+      <div class="menu-toggle" @click="toggleMenu">
+        <i v-if="!isMenuOpen" class="fas fa-bars"></i>
+        <i v-else class="fas fa-times"></i>
+      </div>
     </header>
+    <nav :class="{ 'open': isMenuOpen }">
+      <div class="cabeza">
+        <img src="/chichen.png" id="imge">
+        <h1>DigitalDine</h1>
+      </div>
+      <router-link to="/about">
+        <a>About</a>
+      </router-link>
+      <router-link to="/login">
+        <a>Log in</a>
+      </router-link>
+    </nav>
     <div class="separador"></div>
-  </template>
-  
-  <style scoped>
-    header {
-      padding: 10px;
-      border: 3px solid #000;
-      text-align: center; /* Centrar el texto en pantallas pequeñas */
-    }
-  
-    .separador {
-      height: 15px;
-    }
-  
-    /* Media Query para pantallas más pequeñas */
-    @media only screen and (max-width: 768px) {
-      header {
-        padding: 10px 0; /* Reducir el espacio vertical en pantallas pequeñas */
-      }
-    }
-  </style>  
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+
+const isMenuOpen = ref(false);
+
+const toggleMenu = () => {
+  isMenuOpen.value = !isMenuOpen.value;
+};
+</script>
+
+<style scoped>
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border: 3px solid #000;
+}
+
+.menu-toggle {
+  cursor: pointer;
+}
+
+.menu-toggle i {
+  font-size: 40px; /* Tamaño del icono del menú */
+}
+
+nav {
+  width: 0;
+  height: 100%;
+  background-color: #333;
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding-top: 60px; /* Alineación con el encabezado */
+  transition: width 0.5s ease;
+  overflow-x: hidden;
+}
+
+nav.open {
+  width: 250px; /* Ancho del menú abierto */
+}
+
+nav a {
+  display: block;
+  color: #f2f2f2;
+  padding: 10px;
+  text-decoration: none;
+}
+
+nav a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+.separador {
+  height: 15px;
+}
+
+/* Media Query para pantallas más pequeñas */
+@media only screen and (max-width: 768px) {
+  header h1 {
+    font-size: 1.5rem;
+  }
+}
+
+.cabeza{
+  color:#fff;
+}
+
+#imge{
+  height:120px;
+  width:190px; 
+}
+</style>

@@ -69,6 +69,8 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import Loading from '../components/Loading.vue';
 
+const isLogged = ref(localStorage.getItem('token'));
+
 const images = ref([]);
 const expandedImage = ref(null);
 const loading = ref(true);
