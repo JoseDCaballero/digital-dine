@@ -1,4 +1,5 @@
 <template>
+  <h1>Subir bebidas</h1>
   <div class="container">
     <div v-if="imagePreview" class="image-preview">
       <img :src="imagePreview" alt="Vista previa de la imagen" class="preview-img"/>
@@ -97,7 +98,7 @@ const uploadFile = async () => {
   display: inline-block;
   padding: 10px 20px;
   border-radius: 5px;
-  background-color: #3498db;
+  background-color: #B22222;
   color: white;
   cursor: pointer;
   font-size: 16px;
@@ -105,7 +106,7 @@ const uploadFile = async () => {
 }
 
 .file-label:hover {
-  background-color: #2980b9;
+  background-color: #800000;
 }
 
 .image-preview {
@@ -132,7 +133,7 @@ const uploadFile = async () => {
   padding: 10px 20px;
   border-radius: 5px;
   border: none;
-  background-color: #2ecc71;
+  background-color: #6B8E23;
   color: white;
   font-size: 16px;
   cursor: pointer;
@@ -140,6 +141,6 @@ const uploadFile = async () => {
 }
 
 .btnsubir:hover {
-  background-color: #27ae60;
+  background-color: #556B2F;
 }
 </style>

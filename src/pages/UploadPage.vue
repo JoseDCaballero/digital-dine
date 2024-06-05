@@ -1,4 +1,5 @@
 <template>
+  <h1>Subir platillos</h1>
   <div class="container">
     <div v-if="imagePreview" class="image-preview">
       <img :src="imagePreview" alt="Vista previa de la imagen" class="preview-img"/>

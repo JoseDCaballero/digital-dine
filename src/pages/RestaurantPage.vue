@@ -35,11 +35,13 @@
       <img :src="expandedImage" alt="Expanded Image">
     </div>
     <!-- Context Menu -->
+    <div v-if="isLogged">
     <div v-if="contextMenuVisible" :style="{ top: `${contextMenuY}px`, left: `${contextMenuX}px` }" class="context-menu">
       <ul>
         <li @click="handleContextMenuAction('edit')">Edit</li>
         <li @click="handleContextMenuAction('delete')">Delete</li>
       </ul>
+    </div>
     </div>
     <!-- Edit Form Modal -->
     <div v-if="editFormVisible" class="edit-form-overlay">
@@ -69,7 +71,7 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import Loading from '../components/Loading.vue';
 
-const isLogged = ref(localStorage.getItem('token'));
+const isLogged = localStorage.getItem('token');
 
 const images = ref([]);
 const expandedImage = ref(null);
@@ -114,6 +116,8 @@ const closeExpandedImage = () => {
 };
 
 const showContextMenu = (event, image) => {
+  event.preventDefault();
+  event.stopPropagation();
   contextMenuX.value = event.clientX;
   contextMenuY.value = event.clientY;
   contextMenuVisible.value = true;
@@ -303,7 +307,7 @@ onMounted(() => {
 
 /* Context Menu Styles */
 .context-menu {
-  position: absolute;
+  position: fixed; /* Cambia a fixed para asegurar que se posicione respecto a la ventana */
   background-color: #333;
   color: #fff;
   border-radius: 8px;

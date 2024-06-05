@@ -12,12 +12,31 @@
         <img src="/chichen.png" id="imge">
         <h1>DigitalDine</h1>
       </div>
-      <router-link to="/about">
-        <a>About</a>
-      </router-link>
-      <router-link to="/login">
-        <a>Log in</a>
-      </router-link>
+      <div v-if="!token">
+        <div class="apartados">
+          
+        </div>
+        <router-link to="/login">
+          <a>Log in</a>
+        </router-link>
+      </div>
+      <div v-else>
+        <div class="apartados">
+          <p>Subir imagenes al:</p>
+        </div>
+        <router-link to="/upload">
+          <a>Restaurant</a>
+        </router-link>
+        <router-link to="/bupload">
+          <a>Bar</a>
+        </router-link>
+        <div class="apartados">
+          <p>Cerrar sesión:</p>
+        </div>
+        <router-link to="/">
+          <a @click="byeToken">Log out</a>
+        </router-link>
+      </div>
     </nav>
     <div class="separador"></div>
   </div>
@@ -25,12 +44,27 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const isMenuOpen = ref(false);
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
 };
+
+const token = localStorage.getItem('token')
+
+const byeToken = () => {
+  const val = confirm("¿Seguro que quiere cerrar su sesión?")
+
+  if (val) {
+    localStorage.removeItem('token');
+    alert("Sesión finalizada")
+    router.push("/login")
+  }
+}
 </script>
 
 <style scoped>
@@ -47,7 +81,8 @@ header {
 }
 
 .menu-toggle i {
-  font-size: 40px; /* Tamaño del icono del menú */
+  font-size: 40px;
+  /* Tamaño del icono del menú */
 }
 
 nav {
@@ -57,13 +92,15 @@ nav {
   position: fixed;
   top: 0;
   left: 0;
-  padding-top: 60px; /* Alineación con el encabezado */
+  padding-top: 60px;
+  /* Alineación con el encabezado */
   transition: width 0.5s ease;
-  overflow-x: hidden;
+  overflow-x: hidden;  
 }
 
 nav.open {
-  width: 250px; /* Ancho del menú abierto */
+  width: 250px;
+  /* Ancho del menú abierto */
 }
 
 nav a {
@@ -89,12 +126,22 @@ nav a:hover {
   }
 }
 
-.cabeza{
-  color:#fff;
+.cabeza {
+  color: #fff;
+  height: 30vh;
 }
 
-#imge{
-  height:120px;
-  width:190px; 
+#imge {
+  height: 120px;
+  width: 190px;
+}
+
+.apartados {
+  background-color: #c4c4c4;
+  height: 35px;
+  width:auto;    
+  display:flex;
+  align-items: center;  
+  justify-content: center;
 }
 </style>

@@ -27,17 +27,17 @@
   
   const login = async () => {
     try {
-      const response = await axios.post('http://localhost:8000/login', {
+      const response = await axios.post(import.meta.env.VITE_API_URL + '/login', {
         username: username.value,
         password: password.value
       });
   
       localStorage.setItem('token', response.data.token);
       alert("Se ha iniciado sesión correctamente");
-      router.push("/editar")
+      router.push("/")
     } catch (error) {
       console.error('Error:', error);
-      message.value = 'Login failed!';
+      alert('Error')
     }
   };
   </script>

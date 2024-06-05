@@ -8,7 +8,7 @@
           v-for="(image, index) in images" 
           :key="index" 
           class="card" 
-          @click="expandImage(image.url)" 
+          @click="expandImage(image.url)"           
           @contextmenu.prevent="showContextMenu($event, image)">
           <img :src="image.url" :alt="image.name" class="card-image">
           <div class="card-content">
@@ -35,11 +35,13 @@
       <img :src="expandedImage" alt="Expanded Drink Image">
     </div>
     <!-- Context Menu -->
+    <div v-if="token">
     <div v-if="contextMenuVisible" :style="{ top: `${contextMenuY}px`, left: `${contextMenuX}px` }" class="context-menu">
       <ul>
         <li @click="handleContextMenuAction('edit')">Edit</li>
         <li @click="handleContextMenuAction('delete')">Delete</li>
       </ul>
+    </div>
     </div>
   </div>
   <!-- Edit Form Modal -->
@@ -68,6 +70,8 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import Load from '../components/Load.vue';
+
+const token = localStorage.getItem('token');
 
 const images = ref([]);
 const expandedImage = ref(null);
@@ -109,6 +113,8 @@ const closeExpandedImage = () => {
 };
 
 const showContextMenu = (event, image) => {
+  event.preventDefault();
+  event.stopPropagation();
   contextMenuX.value = event.clientX;
   contextMenuY.value = event.clientY;
   contextMenuVisible.value = true;
@@ -182,11 +188,11 @@ const cancelEdit = () => {
   editFormVisible.value = false;
 };
 
-
 onMounted(() => {
   fetchImages();
 });
 </script>
+
 <style scoped>
 .card-container {
   padding: 20px;
@@ -296,7 +302,7 @@ onMounted(() => {
 
 /* Context Menu Styles */
 .context-menu {
-  position: absolute;
+  position: fixed; /* Cambia a fixed para asegurar que se posicione respecto a la ventana */
   background-color: #333;
   color: #fff;
   border-radius: 8px;

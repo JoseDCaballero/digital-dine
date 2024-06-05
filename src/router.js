@@ -9,8 +9,6 @@ import {
   BuploadPage,
   NotFound,
   LoginPage,
-  AboutPage,
-  EditPage,
 } from './pages/index.js';
 
 const routes = [
@@ -75,22 +73,6 @@ const routes = [
     component: LoginPage,
     meta: {
       title: 'Iniciar sesión',
-      layout: DefaultLayout
-    }
-  },
-  {
-    path: '/about',
-    component: AboutPage,
-    meta:{
-      title: 'About us',
-      layout: DefaultLayout
-    }
-  },
-  {
-    path: '/editar',
-    component: EditPage,
-    meta: {
-      title: 'Edición',
       layout: DefaultLayout
     }
   },
