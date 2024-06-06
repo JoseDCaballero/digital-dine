@@ -36,12 +36,12 @@
     </div>
     <!-- Context Menu -->
     <div v-if="token">
-    <div v-if="contextMenuVisible" :style="{ top: `${contextMenuY}px`, left: `${contextMenuX}px` }" class="context-menu">
-      <ul>
-        <li @click="handleContextMenuAction('edit')">Edit</li>
-        <li @click="handleContextMenuAction('delete')">Delete</li>
-      </ul>
-    </div>
+      <div v-if="contextMenuVisible" :style="{ top: `${contextMenuY}px`, left: `${contextMenuX}px` }" class="context-menu">
+        <ul>
+          <li @click="handleContextMenuAction('edit')">Edit</li>
+          <li @click="handleContextMenuAction('delete')">Delete</li>
+        </ul>
+      </div>
     </div>
   </div>
   <!-- Edit Form Modal -->
@@ -59,6 +59,10 @@
       <label>
         Price:
         <input v-model="editFormData.price" type="number">
+      </label>
+      <label>
+        Image:
+        <input ref="imageInput" type="file" @change="onFileChange">
       </label>
       <button @click="updateImage">Save</button>
       <button @click="cancelEdit">Cancel</button>
@@ -85,6 +89,7 @@ const selectedImage = ref(null);
 // Nuevas variables para el formulario de edición
 const editFormVisible = ref(false);
 const editFormData = ref({});
+const selectedFile = ref(null);
 
 const fetchImages = async () => {
   try {
@@ -148,23 +153,35 @@ const deleteImage = async (image) => {
   }
 };
 
+const onFileChange = (event) => {
+  selectedFile.value = event.target.files[0];
+};
+
 const updateImage = async () => {
   try {
-    const { name, description, price } = editFormData.value;
-    await axios.put(`${import.meta.env.VITE_API_URL}/bupdate/${selectedImage.value.filename}`, {
-      name,
-      description,
-      price
-    }, {
+    const formData = new FormData();
+    formData.append('name', editFormData.value.name);
+    formData.append('description', editFormData.value.description);
+    formData.append('price', editFormData.value.price);
+    if (selectedFile.value) {
+      formData.append('new_image', selectedFile.value);
+    }
+
+    await axios.put(`${import.meta.env.VITE_API_URL}/bupdate/${selectedImage.value.filename}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
     });
+
     const updatedImage = images.value.find(img => img.filename === selectedImage.value.filename);
     if (updatedImage) {
-      updatedImage.name = name;
-      updatedImage.description = description;
-      updatedImage.price = price;
+      updatedImage.name = editFormData.value.name;
+      updatedImage.description = editFormData.value.description;
+      updatedImage.price = editFormData.value.price;
+      if (selectedFile.value) {
+        // Actualizar la URL de la imagen para evitar problemas de caché
+        updatedImage.url = URL.createObjectURL(selectedFile.value);
+      }
     }
     alert('Drink updated successfully');
     editFormVisible.value = false;
@@ -179,9 +196,8 @@ const editImage = (image) => {
     console.error('No image selected for editing');
     return;
   }
-  console.log('Editing image:', image);
   editFormData.value = { ...image };
-  editFormVisible.value = true; // Asegúrate de establecer editFormVisible en true
+  editFormVisible.value = true;
 };
 
 const cancelEdit = () => {
@@ -375,4 +391,3 @@ onMounted(() => {
   background-color: #0056b3;
 }
 </style>
-

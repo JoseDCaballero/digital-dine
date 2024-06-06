@@ -13,9 +13,9 @@
         <h1>DigitalDine</h1>
       </div>
       <div v-if="!token">
-        <div class="apartados">
+        <!-- <div class="apartados">
           
-        </div>
+        </div> -->
         <router-link to="/login">
           <a>Log in</a>
         </router-link>
