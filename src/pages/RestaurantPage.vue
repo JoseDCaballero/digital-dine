@@ -59,6 +59,10 @@
           Price:
           <input v-model="editFormData.price" type="number">
         </label>
+        <label>
+          Replace Image:
+          <input type="file" @change="handleEditFileChange">
+        </label>
         <button @click="updateImage">Save</button>
         <button @click="cancelEdit">Cancel</button>
       </div>
@@ -86,7 +90,8 @@ const editFormVisible = ref(false);
 const editFormData = ref({
   name: '',
   description: '',
-  price: 0
+  price: 0,
+  file: null
 });
 
 const fetchImages = async () => {
@@ -155,23 +160,34 @@ const cancelEdit = () => {
   editFormVisible.value = false;
 };
 
+const handleEditFileChange = (event) => {
+  editFormData.value.file = event.target.files[0];
+};
+
 const updateImage = async () => {
   try {
-    const { name, description, price } = editFormData.value;
-    await axios.put(`${import.meta.env.VITE_API_URL}/update/${selectedImage.value.filename}`, {
-      name,
-      description,
-      price
-    }, {
+    const formData = new FormData();
+    formData.append('name', editFormData.value.name);
+    formData.append('description', editFormData.value.description);
+    formData.append('price', editFormData.value.price);
+    if (editFormData.value.file) {
+      formData.append('file', editFormData.value.file);
+    }
+
+    await axios.put(`${import.meta.env.VITE_API_URL}/update/${selectedImage.value.filename}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
     });
+
     const updatedImage = images.value.find(img => img.filename === selectedImage.value.filename);
     if (updatedImage) {
-      updatedImage.name = name;
-      updatedImage.description = description;
-      updatedImage.price = price;
+      updatedImage.name = editFormData.value.name;
+      updatedImage.description = editFormData.value.description;
+      updatedImage.price = editFormData.value.price;
+      if (editFormData.value.file) {
+        updatedImage.url = URL.createObjectURL(editFormData.value.file);
+      }
     }
     alert('Image updated successfully');
     editFormVisible.value = false;

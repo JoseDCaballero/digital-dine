@@ -1,5 +1,5 @@
 <template>
-  <h1>Subir platillos</h1>
+  <h1 class="titulo">Subir platillos</h1>
   <div class="container">
     <div v-if="imagePreview" class="image-preview">
       <img :src="imagePreview" alt="Vista previa de la imagen" class="preview-img"/>
@@ -141,5 +141,9 @@ const uploadFile = async () => {
 
 .btn-upload:hover {
   background-color: #27ae60;
+}
+
+.titulo{
+  font-size: 6vh;
 }
 </style>
