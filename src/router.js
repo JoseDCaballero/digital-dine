@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import DefaultLayout from "./layouts/DefaultLayout.vue";
 import HomeLayout from "./layouts/HomeLayout.vue";
+import LayoutSimple from "./layouts/LayoutSimple.vue";
 import {
   ElectionPage,
   BarPage,
@@ -9,6 +10,7 @@ import {
   BuploadPage,
   NotFound,
   LoginPage,
+  ConfirmationPage,
 } from './pages/index.js';
 
 const routes = [
@@ -75,6 +77,14 @@ const routes = [
       title: 'Iniciar sesión',
       layout: DefaultLayout
     }
+  },
+  {
+    path: '/confirm',
+    component: ConfirmationPage,
+    meta: {
+      title: 'Confirm your order',
+      layout: LayoutSimple
+    } 
   },
 ]
 
