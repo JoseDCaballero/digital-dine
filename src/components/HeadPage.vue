@@ -2,11 +2,12 @@
     <header>
         <router-link to="/">
             <img id="flecha" src="/arrow.png">
-        </router-link>
+        </router-link>        
         <h1>DigitalDine</h1>
     </header>
     <div class="separador"></div>
 </template>
+
 <style scoped>
 header {
     padding: 10px;

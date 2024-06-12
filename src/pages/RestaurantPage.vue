@@ -67,6 +67,9 @@
         <button @click="cancelEdit">Cancel</button>
       </div>
     </div>
+    <router-link v-if="!isCartEmpty" to="/confirm" class="floating-btn">
+    Confirmar Pedido
+  </router-link>
   </div>
 </template>
 
@@ -76,10 +79,15 @@ import axios from 'axios';
 import Loading from '../components/Loading.vue';
 
 const isLogged = localStorage.getItem('token');
-
 const images = ref([]);
 const expandedImage = ref(null);
 const loading = ref(true);
+
+const cart = ref(JSON.parse(localStorage.getItem('cart')) || []);
+const isCartEmpty = ref(cart.value.length === 0);
+const updateCartStatus = () => {
+  isCartEmpty.value = cart.value.length === 0;
+};
 
 const contextMenuVisible = ref(false);
 const contextMenuX = ref(0);
@@ -106,10 +114,15 @@ const fetchImages = async () => {
 };
 
 const addToCart = (image) => {
-  let conf = confirm(`¿Desea añadir ${image.name} al carrito por $${image.price}?`);
-  if (conf) {
-    alert(`${image.name} añadido al carrito.`);
+  const existingItem = cart.value.find(item => item.filename === image.filename);
+  if (existingItem) {
+    existingItem.quantity += 1;
+  } else {
+    cart.value.push({ ...image, quantity: 1 });
   }
+  localStorage.setItem('cart', JSON.stringify(cart.value));
+  alert(`${image.name} añadido al carrito.`);
+  updateCartStatus();
 };
 
 const expandImage = (imageUrl) => {
@@ -210,6 +223,7 @@ const deleteImage = async (image) => {
 
 onMounted(() => {
   fetchImages();
+  updateCartStatus();
 });
 </script>
 
@@ -400,6 +414,24 @@ onMounted(() => {
 }
 
 .edit-form button:hover {
+  background-color: #0056b3;
+}
+
+.floating-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 50px;
+  text-decoration: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  cursor: pointer;
+}
+
+.floating-btn:hover {
   background-color: #0056b3;
 }
 </style>
