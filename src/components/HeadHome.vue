@@ -12,7 +12,7 @@
         <img src="/chichen.png" id="imge">
         <h1>DigitalDine</h1>
       </div>
-      <div v-if="!token">
+      <div v-if="token">
         <!-- <div class="apartados">
           
         </div> -->
