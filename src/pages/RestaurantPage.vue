@@ -15,7 +15,7 @@
             <h3 class="card-title">{{ image.name }}</h3>
             <p class="card-description">{{ image.description }}</p>
             <p class="card-price">Price: ${{ image.price }}</p>
-            <button class="add-to-cart-button" @click.stop="addToCart(image)">Add to Cart</button>
+            <button v-if="token" class="add-to-cart-button" @click.stop="addToCart(image)">Add to Cart</button>
           </div>
         </div>
       </div>
