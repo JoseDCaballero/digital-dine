@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
 const orders = ref([]);
@@ -13,39 +13,23 @@ const fetchOrders = async () => {
   }
 };
 
-let socket;
-
 const removeOrder = async (orderIndex) => {
-  try {
-    await axios.delete(import.meta.env.VITE_API_URL + `/orders/${orderIndex}`);
-    orders.value.splice(orderIndex, 1); // Remove the order from the orders list
-  } catch (error) {
-    console.error("There was an error deleting the order:", error);
+  const confirmar = confirm("¿El pedido está listo?")
+
+  if (confirmar) {
+    try {
+      await axios.delete(import.meta.env.VITE_API_URL + `/orders/${orderIndex}`);
+      orders.value.splice(orderIndex, 1); // Remove the order from the orders list
+    } catch (error) {
+      console.error("There was an error deleting the order:", error);
+    }
   }
 };
 
 onMounted(() => {
   fetchOrders();
-
-  socket = new WebSocket('wss://apipy-tln4.onrender.com/ws');
-
-  socket.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-    if (data.message === "New order added") {
-      fetchOrders();
-    }
-  };
-
-  socket.onerror = (error) => {
-    console.error("WebSocket error:", error);
-  };
 });
 
-onUnmounted(() => {
-  if (socket) {
-    socket.close();
-  }
-});
 </script>
 
 <template>
@@ -54,9 +38,13 @@ onUnmounted(() => {
     <div v-if="orders.length">
       <div class="order" v-for="(order, index) in orders" :key="index">
         <h3>Order {{ index + 1 }}</h3>
+        <p>Numero de mesa: {{ order.table_number }}</p> <!-- Mostrar número de mesa -->
         <ul>
-          <li v-for="item in order.items" :key="item.name">{{ item.name }} - Quantity: {{ item.quantity }}</li>
+          <li v-for="item in order.items" :key="item.name">
+            {{ item.quantity }} {{ item.name }}
+          </li>
         </ul>
+        <!-- <p>Total Price: ${{ order.total_price.toFixed(2) }}</p> -->
         <button @click="removeOrder(index)">Pedido tomado</button>
       </div>
     </div>
@@ -104,6 +92,11 @@ onUnmounted(() => {
 .order li {
   margin-bottom: 5px;
   color: #555;
+}
+
+.order p {
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 
 .order button {
