@@ -37,7 +37,7 @@ const addOrder = async () => {
         quantity: item.quantity
       }));
 
-      await axios.post('http://localhost:8000/orders/', {
+      await axios.post(VITE_API_URL+'/orders/', {
         items: orderItems
       });
 
