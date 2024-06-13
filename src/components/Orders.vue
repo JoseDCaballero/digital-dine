@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import axios from 'axios';
 
 const orders = ref([]);
@@ -12,9 +12,9 @@ const fetchOrders = async () => {
     console.error("There was an error fetching the orders:", error);
   }
 };
-
+let socket;
 const removeOrder = async (orderIndex) => {
-  const confirmar = confirm("¿El pedido está listo?")
+  const confirmar = confirm("¿El pedido está listo?");
 
   if (confirmar) {
     try {
@@ -28,6 +28,34 @@ const removeOrder = async (orderIndex) => {
 
 onMounted(() => {
   fetchOrders();
+  
+  //socket = new WebSocket('ws://localhost:8000/ws');  
+  socket = new WebSocket('wss://apipy-tln4.onrender.com/ws');  
+
+  socket.onopen = () => {
+    console.log('WebSocket connection opened');
+  };
+
+  socket.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    if (data.message === "New order added") {
+      fetchOrders();
+    }
+  };
+
+  socket.onerror = (error) => {
+    console.error("WebSocket error:", error);
+  };
+
+  socket.onclose = (event) => {
+    console.log('WebSocket connection closed', event);
+  };
+});
+
+onUnmounted(() => {
+  if (socket) {
+    socket.close();
+  }
 });
 
 </script>
@@ -38,13 +66,12 @@ onMounted(() => {
     <div v-if="orders.length">
       <div class="order" v-for="(order, index) in orders" :key="index">
         <h3>Order {{ index + 1 }}</h3>
-        <p>Numero de mesa: {{ order.table_number }}</p> <!-- Mostrar número de mesa -->
+        <p>Numero de mesa: {{ order.table_number }}</p>
         <ul>
           <li v-for="item in order.items" :key="item.name">
             {{ item.quantity }} {{ item.name }}
           </li>
         </ul>
-        <!-- <p>Total Price: ${{ order.total_price.toFixed(2) }}</p> -->
         <button @click="removeOrder(index)">Pedido tomado</button>
       </div>
     </div>
