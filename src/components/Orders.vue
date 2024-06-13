@@ -31,7 +31,9 @@ const removeOrderFromLocalStorage = (orderIndex) => {
 onMounted(() => {
     fetchOrders();
 
-    socket = new WebSocket('ws://localhost:8000/ws');
+    const url = import.meta.env.VITE_API_URL
+
+    socket = new WebSocket('ws://apipy-tln4.onrender.com/ws');
 
     socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
