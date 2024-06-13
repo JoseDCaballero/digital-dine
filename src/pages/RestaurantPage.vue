@@ -417,6 +417,18 @@ onMounted(() => {
   background-color: #0056b3;
 }
 
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 .floating-btn {
   position: fixed;
   bottom: 20px;
@@ -429,9 +441,11 @@ onMounted(() => {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   z-index: 1000;
   cursor: pointer;
+  animation: pulse 1s infinite; /* Añadimos la animación aquí */
 }
 
 .floating-btn:hover {
   background-color: #0056b3;
+  animation: none; /* Quitamos la animación al hacer hover */
 }
 </style>

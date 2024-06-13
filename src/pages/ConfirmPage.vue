@@ -1,14 +1,12 @@
 <script setup>
-import { ref } from 'vue'
+/*import { ref } from 'vue'
+const cart = ref(JSON.parse(localStorage.getItem('cart')) || []);*/
 import Cart from '../components/Cart.vue';
-
-const cart = ref(JSON.parse(localStorage.getItem('cart')) || []);
 </script>
 
 <template>
     <main>
-        <h1>This is the confirmation page</h1>
-        <h2>Here will be shown your order for its confirmation</h2>
         <Cart />
     </main>
+    <h3>The orders may take 15 minutes at least</h3>
 </template>    

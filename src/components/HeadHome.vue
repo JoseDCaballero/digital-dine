@@ -31,6 +31,12 @@
           <a>Bar</a>
         </router-link>
         <div class="apartados">
+          <p>Status de cocina:</p>
+        </div>
+        <router-link to="/orders">
+          <a>Pedidos</a>
+        </router-link>
+        <div class="apartados">
           <p>Cerrar sesión:</p>
         </div>
         <router-link to="/">

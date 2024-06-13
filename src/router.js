@@ -11,6 +11,7 @@ import {
   NotFound,
   LoginPage,
   ConfirmationPage,
+  OrderPage,
 } from './pages/index.js';
 
 const routes = [
@@ -83,7 +84,15 @@ const routes = [
     component: ConfirmationPage,
     meta: {
       title: 'Confirm your order',
-      layout: LayoutSimple
+      layout: DefaultLayout
+    } 
+  },
+  {
+    path: '/orders',
+    component: OrderPage,
+    meta: {
+      title: 'Check orders',
+      layout: DefaultLayout
     } 
   },
 ]
