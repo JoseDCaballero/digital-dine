@@ -6,7 +6,7 @@ const orders = ref([]);
 
 const fetchOrders = async () => {
     try {
-        const response = await axios.get(import.meta.env.VITE_API_URL+'/orders/');
+        const response = await axios.get(import.meta.env.VITE_API_URL + '/orders/');
         orders.value = response.data;
     } catch (error) {
         console.error("There was an error fetching the orders:", error);
