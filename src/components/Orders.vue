@@ -2,8 +2,10 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import axios from 'axios';
 
+// Crear una referencia para las órdenes
 const orders = ref([]);
 
+// Función para obtener las órdenes
 const fetchOrders = async () => {
   try {
     const response = await axios.get(import.meta.env.VITE_API_URL + '/orders/');
@@ -12,25 +14,33 @@ const fetchOrders = async () => {
     console.error("There was an error fetching the orders:", error);
   }
 };
+
+// Función para reproducir sonido
+const playNotificationSound = () => {
+
+};
+
 let socket;
+
+// Función para eliminar una orden
 const removeOrder = async (orderIndex) => {
   const confirmar = confirm("¿El pedido está listo?");
 
   if (confirmar) {
     try {
       await axios.delete(import.meta.env.VITE_API_URL + `/orders/${orderIndex}`);
-      orders.value.splice(orderIndex, 1); // Remove the order from the orders list
+      orders.value.splice(orderIndex, 1); // Eliminar la orden de la lista de órdenes
     } catch (error) {
       console.error("There was an error deleting the order:", error);
     }
   }
 };
-
+const audio = new Audio('./sounds/notification.mp3');
+// Configuración de WebSocket y montaje del componente
 onMounted(() => {
-  fetchOrders();
-  
-  //socket = new WebSocket('ws://localhost:8000/ws');  
-  socket = new WebSocket('wss://apipy-tln4.onrender.com/ws');  
+  fetchOrders();  
+  //socket = new WebSocket('ws://localhost:8000/ws');
+  socket = new WebSocket('wss://apipy-tln4.onrender.com/ws');
 
   socket.onopen = () => {
     console.log('WebSocket connection opened');
@@ -38,7 +48,8 @@ onMounted(() => {
 
   socket.onmessage = (event) => {
     const data = JSON.parse(event.data);
-    if (data.message === "New order added") {
+    if (data.message === "New order added") {      
+      audio.play();
       fetchOrders();
     }
   };
@@ -52,12 +63,12 @@ onMounted(() => {
   };
 });
 
+// Desmontaje del componente y cierre del WebSocket
 onUnmounted(() => {
   if (socket) {
     socket.close();
   }
 });
-
 </script>
 
 <template>
