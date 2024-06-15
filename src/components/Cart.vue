@@ -9,6 +9,7 @@ const cart = ref(JSON.parse(localStorage.getItem('cart')) || []);
 const isInTheBar = ref(false);
 const isInTheRest = ref(false);
 const tableNumber = ref(null);
+const clientName = ref(null);
 
 const cartItems = computed(() => cart.value);
 const total = computed(() => cart.value.reduce((sum, item) => sum + item.price * item.quantity, 0));
@@ -23,6 +24,7 @@ const clearCart = () => {
 
 const addOrder = async () => {
   let table = document.getElementById("mesa");
+  let nameC = document.getElementById("nombreCliente");
 
   if (isInTheRest.value) {
     if (!table.value) {
@@ -40,7 +42,8 @@ const addOrder = async () => {
         await axios.post(import.meta.env.VITE_API_URL + '/orders/', {
           items: orderItems,
           total_price: totalPrice,
-          table_number: isInTheRest.value ? parseInt(tableNumber.value) : null
+          table_number: isInTheRest.value ? parseInt(tableNumber.value) : null,
+          //client_name: isInTheBar.value ? clientName.value : null
         });
 
         alert("Your order was taken successfully");
@@ -51,26 +54,32 @@ const addOrder = async () => {
       }
     }
   } else if (isInTheBar.value) {
-    const orderItems = cart.value.map(item => ({
-      name: item.name,
-      quantity: item.quantity,
-      price: item.price
-    }));
+    if (!nameC.value) {
+      alert("Add a name for identification")
+    }
+    else {
+      const orderItems = cart.value.map(item => ({
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price
+      }));
 
-    const totalPrice = cart.value.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      const totalPrice = cart.value.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-    try {
-      await axios.post(import.meta.env.VITE_API_URL + '/orders/', {
-        items: orderItems,
-        total_price: totalPrice
-        //table_number: isInTheRest.value ? parseInt(tableNumber.value) : null
-      });
+      try {
+        await axios.post(import.meta.env.VITE_API_URL + '/orders/', {
+          items: orderItems,
+          total_price: totalPrice,
+          //table_number: isInTheRest.value ? parseInt(tableNumber.value) : null,
+          client_name: !isInTheRest.value ? clientName.value : null
+        });
 
-      alert("Your order was taken successfully");
-      router.push("/");
-    } catch (error) {
-      console.error("There was an error saving your order:", error);
-      alert("There was an error saving your order");
+        alert("Your order was taken successfully");
+        router.push("/");
+      } catch (error) {
+        console.error("There was an error saving your order:", error);
+        alert("There was an error saving your order");
+      }
     }
   } else {
     alert("Choose your location");
@@ -108,6 +117,8 @@ const decrementQuantity = (item) => {
         <div v-if="!isInTheRest">
           <input type="checkbox" class="takeaway" id="barr" v-model="isInTheBar">
           <label for="barr">I'm in the bar</label>
+          <input v-if="isInTheBar" class="table-number-input" type="name" placeholder="Type your first name"
+            id="nombreCliente" v-model="clientName">
         </div>
         <div v-if="!isInTheBar">
           <input type="checkbox" class="takeaway" id="resta" v-model="isInTheRest">

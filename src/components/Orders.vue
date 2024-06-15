@@ -15,11 +15,6 @@ const fetchOrders = async () => {
   }
 };
 
-// Función para reproducir sonido
-const playNotificationSound = () => {
-
-};
-
 let socket;
 
 // Función para eliminar una orden
@@ -39,8 +34,8 @@ const audio = new Audio('./sounds/notification.mp3');
 // Configuración de WebSocket y montaje del componente
 onMounted(() => {
   fetchOrders();  
-  //socket = new WebSocket('ws://localhost:8000/ws');
-  socket = new WebSocket('wss://apipy-tln4.onrender.com/ws');
+  socket = new WebSocket('ws://localhost:8000/ws');
+  //socket = new WebSocket('wss://apipy-tln4.onrender.com/ws');
 
   socket.onopen = () => {
     console.log('WebSocket connection opened');
@@ -77,7 +72,8 @@ onUnmounted(() => {
     <div v-if="orders.length">
       <div class="order" v-for="(order, index) in orders" :key="index">
         <h3>Order {{ index + 1 }}</h3>
-        <p>Numero de mesa: {{ order.table_number }}</p>
+        <p v-if="order.table_number">Numero de mesa: {{ order.table_number }}</p>
+        <p v-if="order.client_name">Nombre: {{ order.client_name }}</p>
         <ul>
           <li v-for="item in order.items" :key="item.name">
             {{ item.quantity }} {{ item.name }}
