@@ -12,6 +12,7 @@ import {
   LoginPage,
   ConfirmationPage,
   OrderPage,
+  HistorySales
 } from './pages/index.js';
 
 const routes = [
@@ -95,6 +96,14 @@ const routes = [
       layout: DefaultLayout
     } 
   },
+  {
+    path: '/sales',
+    component: HistorySales,
+    meta: {
+      title: 'Registro de ventas',
+      layout: DefaultLayout
+    }
+  }
 ]
 
 const router = createRouter({

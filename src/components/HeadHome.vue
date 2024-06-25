@@ -42,6 +42,9 @@
         <router-link to="/">
           <a @click="byeToken">Log out</a>
         </router-link>
+        <router-link to="/sales">
+          Hacer corte
+        </router-link>
       </div>
     </nav>
     <div class="separador"></div>
