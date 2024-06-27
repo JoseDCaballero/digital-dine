@@ -40,12 +40,15 @@ const fetchSalesData = async () => {
 };
 
 const deleteSalesRecords = async () => {
-  try {
-    await axios.delete(import.meta.env.VITE_API_URL + '/sales/');
-    // Refrescar los datos de ventas después de eliminar los registros
-    fetchSalesData();
-  } catch (error) {
-    console.error('There was an error deleting the sales records:', error);
+  const confi = confirm("¿Seguro quiere eliminar ventas del día?")
+  if (confi) {
+    try {
+      await axios.delete(import.meta.env.VITE_API_URL + '/sales/');
+      // Refrescar los datos de ventas después de eliminar los registros
+      fetchSalesData();
+    } catch (error) {
+      console.error('There was an error deleting the sales records:', error);
+    }
   }
 };
 
