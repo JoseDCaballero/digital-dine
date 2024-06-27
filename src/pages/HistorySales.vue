@@ -16,6 +16,7 @@
           </ul>
         </div>
       </div>
+      <button @click="deleteSalesRecords" class="delete-button">Eliminar Todas las Ventas</button>
     </div>
     <div v-else>
       <p>Cargando...</p>
@@ -35,6 +36,16 @@ const fetchSalesData = async () => {
     salesData.value = response.data;
   } catch (error) {
     console.error('There was an error fetching the sales data:', error);
+  }
+};
+
+const deleteSalesRecords = async () => {
+  try {
+    await axios.delete(import.meta.env.VITE_API_URL + '/sales/');
+    // Refrescar los datos de ventas después de eliminar los registros
+    fetchSalesData();
+  } catch (error) {
+    console.error('There was an error deleting the sales records:', error);
   }
 };
 
@@ -90,5 +101,22 @@ onMounted(() => {
 .sales-record-item li {
   margin-bottom: 5px;
   color: #555;
+}
+
+.delete-button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #e74c3c;
+  color: #fff;
+  font-size: 1em;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.delete-button:hover {
+  background-color: #c0392b;
 }
 </style>
