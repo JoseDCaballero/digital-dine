@@ -53,8 +53,6 @@ onMounted(() => {
   grid-template-columns: repeat(2, 1fr); /* Dos columnas con el mismo ancho */
   gap: 0px;
   padding: 0px;
-  padding-left: 250px;
-  padding-right: 800px;
 }
 
 .card {
