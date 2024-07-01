@@ -34,8 +34,8 @@ const audio = new Audio('./sounds/notification.mp3');
 // Configuración de WebSocket y montaje del componente
 onMounted(() => {
   fetchOrders();    
-  socket = new WebSocket('ws://localhost:8000/ws');
-  //socket = new WebSocket('wss://apipy-tln4.onrender.com/ws');
+  //socket = new WebSocket('ws://localhost:8000/ws');
+  socket = new WebSocket('wss://apipy-tln4.onrender.com/ws');
 
   socket.onopen = () => {
     console.log('WebSocket connection opened');
