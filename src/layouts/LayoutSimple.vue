@@ -1,3 +1,13 @@
+<script>
+import HeadSimple from '../components/HeadSimple.vue'
+
+export default {
+  components: {
+    HeadSimple
+  }
+}
+</script>
 <template>
-    <slot></slot>
+<HeadSimple/>
+<slot></slot>
 </template>

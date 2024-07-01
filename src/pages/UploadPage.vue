@@ -12,6 +12,7 @@
       <input type="text" v-model="name" placeholder="Nombre del platillo" class="input-field">
       <input type="text" v-model="description" placeholder="Descripción del platillo" class="input-field">
       <input type="number" v-model="price" placeholder="Precio del platillo" class="input-field">
+      <input type="text" v-model="category" placeholder="Categoría del producto" class="input-field">
     </div>
     <button @click="uploadFile" class="btn-upload">Subir</button>
   </div>
@@ -26,6 +27,7 @@ const imagePreview = ref(null);
 const name = ref('');
 const description = ref('');
 const price = ref(0);
+const category = ref('')
 
 const handleFileUpload = (event) => {
   selectedFile.value = event.target.files[0];
@@ -49,6 +51,7 @@ const uploadFile = async () => {
   formData.append('name', name.value);
   formData.append('description', description.value);
   formData.append('price', price.value);
+  formData.append('categoryName', category.value);
 
   let val = confirm("¿Estás seguro de que deseas subir este platillo?");
 

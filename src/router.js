@@ -12,7 +12,8 @@ import {
   LoginPage,
   ConfirmationPage,
   OrderPage,
-  HistorySales
+  HistorySales,
+  CategoriesPage,
 } from './pages/index.js';
 
 const routes = [
@@ -103,7 +104,15 @@ const routes = [
       title: 'Registro de ventas',
       layout: DefaultLayout
     }
-  }
+  },
+  {
+    path: '/restaurant/:categoryName',
+    component: CategoriesPage,
+    meta: {
+      title: 'Products',
+      layout: LayoutSimple
+    }
+  },
 ]
 
 const router = createRouter({

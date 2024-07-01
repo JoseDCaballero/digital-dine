@@ -1,6 +1,6 @@
 <template>
     <header>
-        <router-link to="/">
+        <router-link to="/restaurant">
             <img id="flecha" src="/arrow.png">
         </router-link>        
         <h1>DigitalDine</h1>
