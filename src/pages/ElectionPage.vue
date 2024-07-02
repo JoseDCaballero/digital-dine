@@ -1,17 +1,17 @@
 <template>
-  <h1>Choose the place where you currently are</h1>
+  <h1>Seleccione uno para ver el menú correspondiente</h1>
   <main>
     <div class="window">
       <router-link to="/restaurant" id="a">
         <div id="lugares">
-          <h1>I'm in the restaurant</h1>
+          <h1>Restaurant</h1>
         </div>
       </router-link>
     </div>
     <div class="window1">
       <router-link to="/bar" id="a">
         <div id="lugares">
-          <h1>I'm in the bar</h1>
+          <h1>Bar</h1>
         </div>
       </router-link>
     </div>

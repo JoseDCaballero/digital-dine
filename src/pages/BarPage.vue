@@ -1,6 +1,6 @@
 <template>
   <div class="card-container" @click="closeContextMenu">
-    <h1>Our available drinks</h1>
+    <h1>Bebidas disponibles</h1>
     <Load v-if="loading" />
     <div v-else>
       <div v-if="images.length" class="card-wrapper">
@@ -14,8 +14,8 @@
           <div class="card-content">
             <h3 class="card-title">{{ image.name }}</h3>
             <p class="card-description">{{ image.description }}</p>
-            <p class="card-price">Price: ${{ image.price }}</p>
-            <button v-if="token" class="add-to-cart-button" @click.stop="addToCart(image)">Add to Cart</button>
+            <p class="card-price">Precio: ${{ image.price }}</p>
+            <button v-if="token" class="add-to-cart-button" @click.stop="addToCart(image)">Añadir</button>
           </div>
         </div>
       </div>
@@ -117,8 +117,7 @@ const addToCart = (image) => {
   } else {
     cart.value.push({ ...image, quantity: 1 });
   }
-  localStorage.setItem('cart', JSON.stringify(cart.value));
-  alert(`${image.name} añadido al carrito.`);
+  localStorage.setItem('cart', JSON.stringify(cart.value));  
   updateCartStatus();
 };
 

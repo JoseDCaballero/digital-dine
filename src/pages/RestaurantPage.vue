@@ -29,8 +29,7 @@ const fetchCategories = async () => {
 };
 
 const navigateToCategory = (categoryName) => {
-  "router.push({ name: 'CategoriesPage', params: { categoryName } });"
-  router.push('/restaurant/'+categoryName);
+  router.push('/restaurant/' + categoryName);
 };
 
 onMounted(() => {
@@ -39,20 +38,11 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/*#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}*/
-
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr); /* Dos columnas con el mismo ancho */
-  gap: 0px;
-  padding: 0px;
+  gap: 10px; /* Espacio entre los elementos */
+  padding: 10px;
 }
 
 .card {
@@ -60,8 +50,8 @@ onMounted(() => {
   padding: 10px;
 }
 
-.card:hover{
-  cursor:pointer;
+.card:hover {
+  cursor: pointer;
 }
 
 .card img {
@@ -73,5 +63,21 @@ onMounted(() => {
 .card p {
   margin: 0;
   padding: 10px;
+}
+
+@media (max-width: 600px) {
+  .grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centrar las tarjetas horizontalmente */
+    gap: 10px; /* Espacio entre los elementos */
+    padding: 10px;
+  }
+
+  .card img {
+    width: 100%; /* Ancho flexible para ajustarse al contenedor */
+    max-width: 400px; /* Ancho máximo para las imágenes */
+    height: auto; /* Altura automática para mantener la proporción */
+  }
 }
 </style>

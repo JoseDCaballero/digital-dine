@@ -1,5 +1,5 @@
 <template>
-  <h1 class="titulo">Subir platillos</h1>
+  <h1 class="titulo">Subir productos al restaurante</h1>
   <div class="container">
     <div v-if="imagePreview" class="image-preview">
       <img :src="imagePreview" alt="Vista previa de la imagen" class="preview-img"/>
@@ -9,25 +9,29 @@
       <label for="file-upload" class="file-label">Seleccionar archivo</label>
     </div>
     <div class="input-section">
-      <input type="text" v-model="name" placeholder="Nombre del platillo" class="input-field">
-      <input type="text" v-model="description" placeholder="Descripción del platillo" class="input-field">
-      <input type="number" v-model="price" placeholder="Precio del platillo" class="input-field">
-      <input type="text" v-model="category" placeholder="Categoría del producto" class="input-field">
+      <input type="text" v-model="name" placeholder="Nombre del producto" class="input-field">
+      <input type="text" v-model="description" placeholder="Descripción del producto" class="input-field">
+      <input type="number" v-model="price" placeholder="Precio del producto" class="input-field">
+      <select v-model="category" class="input-field">
+        <option disabled value="">Selecciona una categoría</option>
+        <option v-for="category in categories" :key="category.id" :value="category.name">{{ category.name }}</option>
+      </select>
     </div>
     <button @click="uploadFile" class="btn-upload">Subir</button>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
+const categories = ref([]);
 const selectedFile = ref(null);
 const imagePreview = ref(null);
 const name = ref('');
 const description = ref('');
 const price = ref(0);
-const category = ref('')
+const category = ref('');
 
 const handleFileUpload = (event) => {
   selectedFile.value = event.target.files[0];
@@ -41,8 +45,8 @@ const handleFileUpload = (event) => {
 };
 
 const uploadFile = async () => {
-  if (!selectedFile.value) {
-    alert('Por favor, selecciona un archivo primero.');
+  if (!selectedFile.value || !name.value || !description.value || !price.value || !category.value) {
+    alert('No se puede dejar ni un campo vacío.');
     return;
   }
 
@@ -53,7 +57,7 @@ const uploadFile = async () => {
   formData.append('price', price.value);
   formData.append('categoryName', category.value);
 
-  let val = confirm("¿Estás seguro de que deseas subir este platillo?");
+  let val = confirm("¿Estás seguro de que deseas subir este producto?");
 
   if (val) {
     try {
@@ -62,14 +66,27 @@ const uploadFile = async () => {
           'Content-Type': 'multipart/form-data'
         }
       });
-      alert("El platillo se subió correctamente");
+      alert("El producto se subió correctamente");
       console.log(response.data);
     } catch (error) {
       console.error('Error uploading file:', error);
-      alert('Error al subir el platillo');
+      alert('Error al subir el producto');
     }
   }
 };
+
+const fetchCategories = async () => {
+  try {
+    const response = await axios.get(import.meta.env.VITE_API_URL + '/categories/');
+    categories.value = response.data;
+  } catch (error) {
+    console.error("There was an error!", error);
+  }
+};
+
+onMounted(() => {
+  fetchCategories();
+});
 </script>
 
 <style scoped>
@@ -146,7 +163,7 @@ const uploadFile = async () => {
   background-color: #27ae60;
 }
 
-.titulo{
+.titulo {
   font-size: 6vh;
 }
 </style>
