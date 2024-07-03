@@ -44,6 +44,32 @@
       </div>
     </div>
   </div>
+  <!-- Edit Form Overlay -->
+  <div v-if="editFormVisible" class="edit-form-overlay">
+    <div class="edit-form">
+      <h2>Edit {{ editFormData.name }}</h2>
+      <label>
+        Name:
+        <input v-model="editFormData.name" type="text">
+      </label>
+      <label>
+        Description:
+        <input v-model="editFormData.description" type="text">
+      </label>
+      <label>
+        Price:
+        <input v-model="editFormData.price" type="number">
+      </label>
+      <label>
+        Image:
+        <input ref="imageInput" type="file" @change="onFileChange">
+      </label>
+      <div class="button-group">
+        <button @click="updateProduct">Save</button>
+        <button @click="cancelEdit">Cancel</button>
+      </div>
+    </div>
+  </div>
   <router-link v-if="!isCartEmpty" to="/confirm" class="floating-btn">
     Confirmar Pedido
   </router-link>
@@ -72,6 +98,10 @@ const contextMenuVisible = ref(false);
 const contextMenuX = ref(0);
 const contextMenuY = ref(0);
 const selectedProduct = ref(null);
+
+const editFormVisible = ref(false);
+const editFormData = ref({});
+const selectedFile = ref(null);
 
 const fetchProducts = async () => {
   try {
@@ -107,7 +137,6 @@ const addToCart = (product) => {
   updateCartStatus();
 };
 
-
 const toggleExpandedProduct = (productImage) => {
   if (expandedProducts.value.includes(productImage)) {
     // Si la imagen ya está expandida, la cerramos
@@ -125,69 +154,78 @@ const closeAllExpandedProducts = () => {
 const showContextMenu = (event, product) => {
   event.preventDefault();
   event.stopPropagation();
+
   contextMenuX.value = event.clientX;
   contextMenuY.value = event.clientY;
   contextMenuVisible.value = true;
   selectedProduct.value = product;
 };
 
-const closeContextMenu = () => {
+const handleContextMenuAction = (action) => {
+  if (action === 'edit') {
+    editFormVisible.value = true;
+    editFormData.value = { ...selectedProduct.value };
+  } else if (action === 'delete') {
+    deleteProduct(selectedProduct.value.id);
+  }
   contextMenuVisible.value = false;
 };
 
-const handleContextMenuAction = (action) => {
-  console.log(`Context menu action: ${action}`);
-  closeContextMenu();
-  if (action === 'edit') {
-    editProduct(selectedProduct.value);
-  } else if (action === 'delete') {
-    const conf = confirm(`Are you sure you want to delete ${selectedProduct.value.name}?`);
-    if (conf) {
-      deleteProduct(selectedProduct.value);
-    }
-  }
-};
-
-const editProduct = async (product) => {
+const deleteProduct = async (productId) => {
   try {
-    // Implementar la lógica para editar el producto
-    alert(`Implementar lógica para editar ${product.name}`);
-  } catch (error) {
-    console.error('Error editing product:', error);
-    alert('Error editing product.');
-  }
-};
-
-const deleteProduct = async (product) => {
-  try {
-    // Implementar la lógica para eliminar el producto
-    alert(`Implementar lógica para eliminar ${product.name}`);
+    await axios.delete(`${import.meta.env.VITE_API_URL}/products/${productId}`);
+    fetchProducts();
   } catch (error) {
     console.error('Error deleting product:', error);
-    alert('Error deleting product.');
   }
+};
+
+const updateProduct = async () => {
+  try {
+    const formData = new FormData();
+    formData.append('name', editFormData.value.name);
+    formData.append('description', editFormData.value.description);
+    formData.append('price', editFormData.value.price);
+    if (selectedFile.value) {
+      formData.append('image', selectedFile.value);
+    }
+
+    await axios.put(`${import.meta.env.VITE_API_URL}/products/${editFormData.value.id}`, formData);
+    editFormVisible.value = false;
+    fetchProducts();
+  } catch (error) {
+    console.error('Error updating product:', error);
+  }
+};
+
+const cancelEdit = () => {
+  editFormVisible.value = false;
+  editFormData.value = {};
+  selectedFile.value = null;
+};
+
+const onFileChange = (event) => {
+  selectedFile.value = event.target.files[0];
 };
 
 onMounted(() => {
   fetchProducts();
-  updateCartStatus();
 });
 </script>
 
 <style scoped>
-/* Estilos CSS previos */
 .card-container {
-  padding: 20px;
+  margin: 20px;
+  padding: 10px;
 }
 
 .card-wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(4, 1fr);
 }
 
 .card {
-  width: calc(25% - 10px); /* 4 tarjetas por fila */
   margin-bottom: 20px;
   border: 1px solid #ccc;
   border-radius: 10px;
@@ -197,18 +235,6 @@ onMounted(() => {
 
 .card:hover {
   transform: translateY(-5px);
-}
-
-@media screen and (max-width: 768px) {
-  .card {
-    width: calc(33.33% - 10px); /* 3 tarjetas por fila en pantallas medianas */
-  }
-}
-
-@media screen and (max-width: 576px) {
-  .card {
-    width: calc(50% - 10px); /* 2 tarjetas por fila en pantallas pequeñas */
-  }
 }
 
 .card-image {
@@ -225,16 +251,18 @@ onMounted(() => {
 }
 
 .card-title {
-  margin-top: 0;
+  font-size: 18px;
+  margin: 10px 0;
 }
 
 .card-description {
   font-size: 14px;
+  color: #666;
 }
 
 .card-price {
-  font-weight: bold;
-  margin-top: 10px;
+  font-size: 16px;
+  margin: 10px 0;
 }
 
 .add-to-cart-button {
@@ -255,44 +283,15 @@ onMounted(() => {
   background-color: #0056b3;
 }
 
-.expanded-image-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.9);
-  z-index: 9999;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.expanded-image-overlay img {
-  max-width: 90%;
-  max-height: 90%;
-}
-
-.close-icon {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  width: 30px;
-  height: 30px;
-  cursor: pointer;
-}
-
-/* Context Menu Styles */
 .context-menu {
-  position: fixed; /* Cambia a fixed para asegurar que se posicione respecto a la ventana */
+  position: fixed;
   background-color: #333;
   color: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  z-index: 10000;
-  overflow: hidden;
   padding: 8px 0;
   min-width: 150px;
+  z-index: 9999;
 }
 
 .context-menu ul {
@@ -309,6 +308,48 @@ onMounted(() => {
 
 .context-menu li:hover {
   background-color: #555;
+}
+
+.edit-form-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+.edit-form {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.edit-form label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.edit-form input {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.button-group button {
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
 }
 
 @keyframes pulse {
@@ -341,5 +382,11 @@ onMounted(() => {
 .floating-btn:hover {
   background-color: #0056b3;
   animation: none; /* Quitamos la animación al hacer hover */
+}
+
+@media (max-width: 768px) {
+  .card-wrapper {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 </style>

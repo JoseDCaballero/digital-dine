@@ -22,10 +22,6 @@ header h1 {
     text-align: center; /* Centra el texto del h1 */
 }
 
-.separador {
-    height: 15px;
-}
-
 #flecha {
     width: 10vh;
     height: 10vh;

@@ -158,7 +158,7 @@ const deleteImage = async (image) => {
   try {
     await axios.delete(`${import.meta.env.VITE_API_URL}/bfiles/${image.filename}`);
     images.value = images.value.filter(img => img.filename !== image.filename);
-    alert(`${image.name} eliminado correctamente.`);
+    alert(`${image.name} eliminado.`);
   } catch (error) {
     console.error('Error eliminando la imagen:', error);
     alert('Hubo un error al eliminar la imagen.');
