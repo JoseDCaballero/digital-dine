@@ -8,7 +8,7 @@
           v-for="(product, index) in products" 
           :key="index" 
           class="card" 
-          @click="toggleExpandedProduct(product.url)" 
+          @click="expandImage(product.url)" 
           @contextmenu.prevent="showContextMenu($event, product)">
           <img :src="product.url" :alt="product.name" class="card-image">
           <div class="card-content">
@@ -23,8 +23,8 @@
         <p>No products available in this category.</p>
       </div>
     </div>
-    <!-- Expanded Product Overlays -->
-    <div v-if="expandedProducts.length > 0" class="expanded-image-overlay" @click="closeAllExpandedProducts">
+    <!-- Expanded Image Overlay -->
+    <div v-if="expandedImage" class="expanded-image-overlay" @click="closeExpandedImage">
       <span class="close-icon">
         <!-- SVG for the close icon -->
         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -32,7 +32,7 @@
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
       </span>
-      <img v-for="(productImage, index) in expandedProducts" :key="index" :src="productImage" :alt="'Expanded Product ' + (index + 1)">
+      <img :src="expandedImage" alt="Expanded Product Image">
     </div>
     <!-- Context Menu -->
     <div v-if="isLogged">
@@ -83,7 +83,7 @@ import Loading from '../components/Loading.vue';
 
 const isLogged = localStorage.getItem('token');
 const products = ref([]);
-const expandedProducts = ref([]); 
+const expandedImage = ref(null); 
 const loading = ref(true);
 const route = useRoute();
 const categoryName = route.params.categoryName;
@@ -137,18 +137,12 @@ const addToCart = (product) => {
   updateCartStatus();
 };
 
-const toggleExpandedProduct = (productImage) => {
-  if (expandedProducts.value.includes(productImage)) {
-    // Si la imagen ya está expandida, la cerramos
-    expandedProducts.value = expandedProducts.value.filter(img => img !== productImage);
-  } else {
-    // Si no está expandida, la añadimos al array
-    expandedProducts.value.push(productImage);
-  }
+const expandImage = (imageUrl) => {
+  expandedImage.value = imageUrl;
 };
 
-const closeAllExpandedProducts = () => {
-  expandedProducts.value = [];
+const closeExpandedImage = () => {
+  expandedImage.value = null;
 };
 
 const showContextMenu = (event, product) => {
@@ -161,40 +155,89 @@ const showContextMenu = (event, product) => {
   selectedProduct.value = product;
 };
 
-const handleContextMenuAction = (action) => {
-  if (action === 'edit') {
-    editFormVisible.value = true;
-    editFormData.value = { ...selectedProduct.value };
-  } else if (action === 'delete') {
-    deleteProduct(selectedProduct.value.id);
-  }
+const closeContextMenu = () => {
   contextMenuVisible.value = false;
 };
 
-const deleteProduct = async (productId) => {
-  try {
-    await axios.delete(`${import.meta.env.VITE_API_URL}/products/${productId}`);
-    fetchProducts();
-  } catch (error) {
-    console.error('Error deleting product:', error);
+const handleContextMenuAction = (action) => {
+  console.log(`Context menu action: ${action}`);
+  closeContextMenu();
+  if (action === 'edit') {
+    editFormData.value = { ...selectedProduct.value };
+    editFormVisible.value = true;
+  } else if (action === 'delete') {
+    const conf = confirm(`Are you sure you want to delete ${selectedProduct.value.name}?`);
+    if (conf) {
+      deleteProduct(selectedProduct.value);
+    }
   }
 };
 
 const updateProduct = async () => {
+  // Validar datos antes de enviar la solicitud  
+  if (!editFormData.value.name || !editFormData.value.description || !editFormData.value.price) {
+    alert('Please fill in all required fields.');
+    return;
+  }
+
   try {
     const formData = new FormData();
     formData.append('name', editFormData.value.name);
     formData.append('description', editFormData.value.description);
     formData.append('price', editFormData.value.price);
+
+    // Solo agrega la imagen si se seleccionó una nueva
     if (selectedFile.value) {
-      formData.append('image', selectedFile.value);
+      formData.append('new_image', selectedFile.value);
     }
 
-    await axios.put(`${import.meta.env.VITE_API_URL}/products/${editFormData.value.id}`, formData);
+    const response = await axios.put(`${import.meta.env.VITE_API_URL}/update/${selectedProduct.value.filename}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      }
+    });
+
+    // Actualiza el producto en la lista de productos localmente
+    const updatedProduct = products.value.find(img => img.filename === selectedProduct.value.filename);
+    if (updatedProduct) {
+      updatedProduct.name = editFormData.value.name;
+      updatedProduct.description = editFormData.value.description;
+      updatedProduct.price = editFormData.value.price;
+
+      // Actualizar la URL de la imagen si se seleccionó una nueva imagen
+      if (selectedFile.value) {
+        updatedProduct.url = URL.createObjectURL(selectedFile.value);
+      }
+    }
+
+    alert('Product updated successfully');
     editFormVisible.value = false;
-    fetchProducts();
   } catch (error) {
-    console.error('Error updating product:', error);
+    console.error('Error editing product:', error);
+    if (error.response) {
+      alert(`Error editing product: ${error.response.data.message}`);
+    } else {
+      alert('An unexpected error occurred.');
+    }
+  }
+};
+
+const onFileChange = (event) => {
+  selectedFile.value = event.target.files[0];
+};
+
+const deleteProduct = async (product) => {
+  try {    
+    await axios.delete(`${import.meta.env.VITE_API_URL}/files/${product.filename}`);
+    products.value = products.value.filter(img => img.filename !== product.filename);
+    alert('Product deleted successfully');
+  } catch (error) {
+    console.error('Error deleting product:', error);
+    if (error.response) {
+      alert(`Error deleting product: ${error.response.data.message}`);
+    } else {
+      alert('An unexpected error occurred.');
+    }
   }
 };
 
@@ -202,10 +245,6 @@ const cancelEdit = () => {
   editFormVisible.value = false;
   editFormData.value = {};
   selectedFile.value = null;
-};
-
-const onFileChange = (event) => {
-  selectedFile.value = event.target.files[0];
 };
 
 onMounted(() => {
@@ -251,18 +290,16 @@ onMounted(() => {
 }
 
 .card-title {
-  font-size: 18px;
-  margin: 10px 0;
+  margin-top: 0;
 }
 
 .card-description {
   font-size: 14px;
-  color: #666;
 }
 
 .card-price {
-  font-size: 16px;
-  margin: 10px 0;
+  font-weight: bold;
+  margin-top: 10px;
 }
 
 .add-to-cart-button {
@@ -283,15 +320,39 @@ onMounted(() => {
   background-color: #0056b3;
 }
 
-.context-menu {
+.expanded-image-overlay {
   position: fixed;
-  background-color: #333;
-  color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  padding: 8px 0;
-  min-width: 150px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
   z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.expanded-image-overlay img {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+}
+
+.close-icon {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  cursor: pointer;
+}
+
+.context-menu {
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  z-index: 1000;
+  padding: 10px;
 }
 
 .context-menu ul {
@@ -301,13 +362,12 @@ onMounted(() => {
 }
 
 .context-menu li {
-  padding: 12px 16px;
+  padding: 5px 10px;
   cursor: pointer;
-  transition: background-color 0.3s;
 }
 
 .context-menu li:hover {
-  background-color: #555;
+  background-color: #f0f0f0;
 }
 
 .edit-form-overlay {
@@ -317,16 +377,21 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
+  z-index: 10000;
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 10000;
 }
 
 .edit-form {
   background-color: white;
   padding: 20px;
-  border-radius: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.edit-form h2 {
+  margin-top: 0;
 }
 
 .edit-form label {
@@ -334,22 +399,35 @@ onMounted(() => {
   margin-bottom: 10px;
 }
 
-.edit-form input {
-  display: block;
+.edit-form input[type="text"],
+.edit-form input[type="number"],
+.edit-form input[type="file"] {
   width: 100%;
-  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-top: 5px;
 }
 
-.button-group {
+.edit-form .button-group {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  margin-top: 20px;
 }
 
-.button-group button {
-  padding: 10px 20px;
+.edit-form .button-group button {
+  padding: 8px 12px;
   border: none;
+  background-color: #007bff;
+  color: white;
   cursor: pointer;
+  border-radius: 5px;
+  margin-left: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.edit-form .button-group button:hover {
+  background-color: #0056b3;
 }
 
 @keyframes pulse {
@@ -382,11 +460,5 @@ onMounted(() => {
 .floating-btn:hover {
   background-color: #0056b3;
   animation: none; /* Quitamos la animación al hacer hover */
-}
-
-@media (max-width: 768px) {
-  .card-wrapper {
-    grid-template-columns: repeat(2, 1fr);
-  }
 }
 </style>
