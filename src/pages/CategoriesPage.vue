@@ -346,13 +346,17 @@ onMounted(() => {
   cursor: pointer;
 }
 
+/* Context Menu Styles */
 .context-menu {
-  position: absolute;
-  background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  z-index: 1000;
-  padding: 10px;
+  position: fixed;
+  background-color: #333;
+  color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 10000;
+  overflow: hidden;
+  padding: 8px 0;
+  min-width: 150px;
 }
 
 .context-menu ul {
@@ -362,12 +366,13 @@ onMounted(() => {
 }
 
 .context-menu li {
-  padding: 5px 10px;
+  padding: 12px 16px;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 .context-menu li:hover {
-  background-color: #f0f0f0;
+  background-color: #555;
 }
 
 .edit-form-overlay {
@@ -454,11 +459,24 @@ onMounted(() => {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   z-index: 1000;
   cursor: pointer;
-  animation: pulse 1s infinite; /* Añadimos la animación aquí */
+  animation: pulse 1s infinite;
 }
 
 .floating-btn:hover {
   background-color: #0056b3;
-  animation: none; /* Quitamos la animación al hacer hover */
+  animation: none;
+}
+
+/* Media Query for small screens */
+@media (max-width: 768px) {
+  .card-wrapper {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .card-wrapper {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 </style>

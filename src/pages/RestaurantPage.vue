@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <h1>Restaurant categories</h1>
+    <h1>Restaurant Categories</h1>
     <div v-if="categories.length" class="grid">
       <div class="card" v-for="category in categories" :key="category.id" @click="navigateToCategory(category.name)">
         <img :src="category.url" :alt="category.name" />
@@ -55,8 +55,8 @@ onMounted(() => {
 }
 
 .card img {
-  width: 400px; /* Ancho fijo para las imágenes */
-  height: 300px; /* Altura fija para las imágenes */
+  width: 100%; /* Ancho del 100% para ajustarse al contenedor */
+  height: 200px; /* Altura fija para las imágenes */
   object-fit: cover; /* Ajustar la imagen manteniendo la proporción */
 }
 
@@ -67,17 +67,13 @@ onMounted(() => {
 
 @media (max-width: 600px) {
   .grid {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Centrar las tarjetas horizontalmente */
+    grid-template-columns: repeat(2, 1fr); /* Mantener dos columnas en dispositivos móviles */
     gap: 10px; /* Espacio entre los elementos */
     padding: 10px;
   }
 
   .card img {
-    width: 100%; /* Ancho flexible para ajustarse al contenedor */
-    max-width: 400px; /* Ancho máximo para las imágenes */
-    height: auto; /* Altura automática para mantener la proporción */
+    height: 150px; /* Ajustar la altura para dispositivos móviles */
   }
 }
 </style>
