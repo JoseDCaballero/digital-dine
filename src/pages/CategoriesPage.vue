@@ -1,11 +1,12 @@
 <template>
   <div class="card-container">
+    <SearchBar :onSearch="handleSearch" />
     <h1>{{ categoryName }}</h1>
     <Loading v-if="loading" />
     <div v-else>
-      <div v-if="products.length" class="card-wrapper">
+      <div v-if="filteredProducts.length" class="card-wrapper">
         <div 
-          v-for="(product, index) in products" 
+          v-for="(product, index) in filteredProducts" 
           :key="index" 
           class="card" 
           @click="expandImage(product.url)" 
@@ -80,9 +81,11 @@ import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
 import Loading from '../components/Loading.vue';
+import SearchBar from '../components/SearchBar.vue';
 
 const isLogged = localStorage.getItem('token');
 const products = ref([]);
+const filteredProducts = ref([]);
 const expandedImage = ref(null); 
 const loading = ref(true);
 const route = useRoute();
@@ -107,6 +110,7 @@ const fetchProducts = async () => {
   try {
     const response = await axios.get(`${import.meta.env.VITE_API_URL}/categories/${categoryName}`);
     products.value = response.data;
+    filteredProducts.value = response.data;
   } catch (error) {
     console.error('Error fetching products:', error);
   } finally {
@@ -245,6 +249,17 @@ const cancelEdit = () => {
   editFormVisible.value = false;
   editFormData.value = {};
   selectedFile.value = null;
+};
+
+const handleSearch = (query) => {
+  if (query) {
+    filteredProducts.value = products.value.filter(product =>
+      product.name.toLowerCase().includes(query.toLowerCase()) ||
+      product.description.toLowerCase().includes(query.toLowerCase())
+    );
+  } else {
+    filteredProducts.value = products.value;
+  }
 };
 
 onMounted(() => {

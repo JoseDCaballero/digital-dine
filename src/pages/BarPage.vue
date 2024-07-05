@@ -1,11 +1,12 @@
 <template>
   <div class="card-container" @click="closeContextMenu">
+    <SearchBar :onSearch="handleSearch" />
     <h1>Bebidas disponibles</h1>
     <Load v-if="loading" />
     <div v-else>
-      <div v-if="images.length" class="card-wrapper">
+      <div v-if="filteredImages.length" class="card-wrapper">
         <div 
-          v-for="(image, index) in images" 
+          v-for="(image, index) in filteredImages" 
           :key="index" 
           class="card" 
           @click="expandImage(image.url)"           
@@ -77,11 +78,14 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import Load from '../components/Load.vue';
+import SearchBar from '../components/SearchBar.vue';
 
 const token = localStorage.getItem('token');
 const images = ref([]);
 const expandedImage = ref(null);
 const loading = ref(true);
+
+const filteredImages = ref([]);
 
 const cart = ref(JSON.parse(localStorage.getItem('cart')) || []);
 const isCartEmpty = ref(cart.value.length === 0);
@@ -103,6 +107,7 @@ const fetchImages = async () => {
   try {
     const response = await axios.get(import.meta.env.VITE_API_URL + '/bfiles/');
     images.value = response.data;
+    filteredImages.value = response.data;
   } catch (error) {
     console.error('Error fetching images:', error);
   } finally {
@@ -214,6 +219,17 @@ const editImage = (image) => {
 
 const cancelEdit = () => {
   editFormVisible.value = false;
+};
+
+const handleSearch = (query) => {
+  if (query) {
+    filteredImages.value = images.value.filter(image =>
+      image.name.toLowerCase().includes(query.toLowerCase()) ||
+      image.description.toLowerCase().includes(query.toLowerCase())
+    );
+  } else {
+    filteredImages.value = images.value;
+  }
 };
 
 onMounted(() => {
