@@ -5,18 +5,15 @@
     <Load v-if="loading" />
     <div v-else>
       <div v-if="filteredImages.length" class="card-wrapper">
-        <div 
-          v-for="(image, index) in filteredImages" 
-          :key="index" 
-          class="card" 
-          @click="expandImage(image.url)"           
+        <div v-for="(image, index) in filteredImages" :key="index" class="card" @click="expandImage(image.url)"
           @contextmenu.prevent="showContextMenu($event, image)">
           <img :src="image.url" :alt="image.name" class="card-image">
           <div class="card-content">
             <h3 class="card-title">{{ image.name }}</h3>
             <p class="card-description">{{ image.description }}</p>
             <p class="card-price">Precio: ${{ image.price }}</p>
-            <button v-if="username === 'mesero'" class="add-to-cart-button" @click.stop="addToCart(image)">Añadir</button>
+            <button v-if="username === 'mesero'" class="add-to-cart-button"
+              @click.stop="addToCart(image)">Añadir</button>
           </div>
         </div>
       </div>
@@ -28,7 +25,8 @@
     <div v-if="expandedImage" class="expanded-image-overlay" @click="closeExpandedImage">
       <span class="close-icon">
         <!-- SVG for the close icon -->
-        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="18" y1="6" x2="6" y2="18"></line>
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
@@ -36,8 +34,9 @@
       <img :src="expandedImage" alt="Expanded Drink Image">
     </div>
     <!-- Context Menu -->
-    <div v-if="username === 'admin'">      
-      <div v-if="contextMenuVisible" :style="{ top: `${contextMenuY}px`, left: `${contextMenuX}px` }" class="context-menu">
+    <div v-if="username === 'admin'">
+      <div v-if="contextMenuVisible" :style="{ top: `${contextMenuY}px`, left: `${contextMenuX}px` }"
+        class="context-menu">
         <ul>
           <li @click="handleContextMenuAction('edit')">Edit</li>
           <li @click="handleContextMenuAction('delete')">Delete</li>
@@ -69,9 +68,11 @@
       <button @click="cancelEdit">Cancel</button>
     </div>
   </div>
-  <router-link v-if="!isCartEmpty" to="/confirm" class="floating-btn">
-    Confirmar Pedido
-  </router-link>
+  <div v-if="!isCartEmpty">
+    <router-link v-if="username === 'mesero'" to="/confirm" class="floating-btn">
+      Confirmar Pedido
+    </router-link>
+  </div>
 </template>
 
 <script setup>
@@ -123,7 +124,7 @@ const addToCart = (image) => {
   } else {
     cart.value.push({ ...image, quantity: 1 });
   }
-  localStorage.setItem('cart', JSON.stringify(cart.value));  
+  localStorage.setItem('cart', JSON.stringify(cart.value));
   updateCartStatus();
 };
 
@@ -251,7 +252,8 @@ onMounted(() => {
 }
 
 .card {
-  width: calc(25% - 10px); /* 4 tarjetas por fila */
+  width: calc(25% - 10px);
+  /* 4 tarjetas por fila */
   margin-bottom: 20px;
   border: 1px solid #ccc;
   border-radius: 10px;
@@ -265,13 +267,15 @@ onMounted(() => {
 
 @media screen and (max-width: 768px) {
   .card {
-    width: calc(33.33% - 10px); /* 3 tarjetas por fila en pantallas medianas */
+    width: calc(33.33% - 10px);
+    /* 3 tarjetas por fila en pantallas medianas */
   }
 }
 
 @media screen and (max-width: 576px) {
   .card {
-    width: calc(50% - 10px); /* 2 tarjetas por fila en pantallas pequeñas */
+    width: calc(50% - 10px);
+    /* 2 tarjetas por fila en pantallas pequeñas */
   }
 }
 
@@ -348,7 +352,8 @@ onMounted(() => {
 
 /* Context Menu Styles */
 .context-menu {
-  position: fixed; /* Cambia a fixed para asegurar que se posicione respecto a la ventana */
+  position: fixed;
+  /* Cambia a fixed para asegurar que se posicione respecto a la ventana */
   background-color: #333;
   color: #fff;
   border-radius: 8px;
@@ -425,9 +430,11 @@ onMounted(() => {
   0% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.1);
   }
+
   100% {
     transform: scale(1);
   }
@@ -445,11 +452,13 @@ onMounted(() => {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   z-index: 1000;
   cursor: pointer;
-  animation: pulse 1s infinite; /* Añadimos la animación aquí */
+  animation: pulse 1s infinite;
+  /* Añadimos la animación aquí */
 }
 
 .floating-btn:hover {
   background-color: #0056b3;
-  animation: none; /* Quitamos la animación al hacer hover */
+  animation: none;
+  /* Quitamos la animación al hacer hover */
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <h1>Restaurant Categories</h1>
+    <h1>Categorias del restaurante</h1>
     <Loadi v-if="loading" />
     <div v-else>
       <div v-if="categories.length" class="grid">

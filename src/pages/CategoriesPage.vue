@@ -5,18 +5,15 @@
     <Loading v-if="loading" />
     <div v-else>
       <div v-if="filteredProducts.length" class="card-wrapper">
-        <div 
-          v-for="(product, index) in filteredProducts" 
-          :key="index" 
-          class="card" 
-          @click="expandImage(product.url)" 
+        <div v-for="(product, index) in filteredProducts" :key="index" class="card" @click="expandImage(product.url)"
           @contextmenu.prevent="showContextMenu($event, product)">
           <img :src="product.url" :alt="product.name" class="card-image">
           <div class="card-content">
             <h3 class="card-title">{{ product.name }}</h3>
             <p class="card-description">{{ product.description }}</p>
             <p class="card-price">Precio: ${{ product.price }}</p>
-            <button v-if="username === 'mesero'" class="add-to-cart-button" @click.stop="addToCart(product)">Añadir</button>
+            <button v-if="username === 'mesero'" class="add-to-cart-button"
+              @click.stop="addToCart(product)">Añadir</button>
           </div>
         </div>
       </div>
@@ -28,7 +25,8 @@
     <div v-if="expandedImage" class="expanded-image-overlay" @click="closeExpandedImage">
       <span class="close-icon">
         <!-- SVG for the close icon -->
-        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="18" y1="6" x2="6" y2="18"></line>
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
@@ -37,7 +35,8 @@
     </div>
     <!-- Context Menu -->
     <div v-if="username === 'admin'">
-      <div v-if="contextMenuVisible" :style="{ top: `${contextMenuY}px`, left: `${contextMenuX}px` }" class="context-menu">
+      <div v-if="contextMenuVisible" :style="{ top: `${contextMenuY}px`, left: `${contextMenuX}px` }"
+        class="context-menu">
         <ul>
           <li @click="handleContextMenuAction('edit')">Edit</li>
           <li @click="handleContextMenuAction('delete')">Delete</li>
@@ -71,9 +70,11 @@
       </div>
     </div>
   </div>
-  <router-link v-if="!isCartEmpty" to="/confirm" class="floating-btn">
-    Confirmar Pedido
-  </router-link>
+  <div v-if="!isCartEmpty">
+    <router-link v-if="username === 'mesero'" to="/confirm" class="floating-btn">
+      Confirmar Pedido
+    </router-link>
+  </div>
 </template>
 
 <script setup>
@@ -87,7 +88,7 @@ const username = localStorage.getItem('username');
 const isLogged = localStorage.getItem('token');
 const products = ref([]);
 const filteredProducts = ref([]);
-const expandedImage = ref(null); 
+const expandedImage = ref(null);
 const loading = ref(true);
 const route = useRoute();
 const categoryName = route.params.categoryName;
@@ -121,7 +122,7 @@ const fetchProducts = async () => {
 
 const addToCart = (product) => {
   let updatedCart = [...cart.value]; // Copia el carrito actual para evitar mutaciones directas
-  
+
   const existingItem = updatedCart.find(item => item.name === product.name); // Busca el producto por nombre
 
   if (existingItem) {
@@ -134,10 +135,10 @@ const addToCart = (product) => {
 
   // Guarda el carrito actualizado en localStorage
   localStorage.setItem('cart', JSON.stringify(updatedCart));
-  
+
   // Actualiza el valor de cart con el nuevo carrito actualizado
   cart.value = updatedCart;
-  
+
   // Actualiza el estado del carrito (opcional)
   updateCartStatus();
 };
@@ -232,7 +233,7 @@ const onFileChange = (event) => {
 };
 
 const deleteProduct = async (product) => {
-  try {    
+  try {
     await axios.delete(`${import.meta.env.VITE_API_URL}/files/${product.filename}`);
     products.value = products.value.filter(img => img.filename !== product.filename);
     alert('Product deleted successfully');
@@ -455,9 +456,11 @@ onMounted(() => {
   0% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.1);
   }
+
   100% {
     transform: scale(1);
   }

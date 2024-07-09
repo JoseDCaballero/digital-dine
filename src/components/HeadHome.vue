@@ -14,6 +14,7 @@
       </div>
       <div v-if="token">
         <div v-if="username === 'admin'">
+          <a style="padding: 5px;">{{ username }}</a>
           <div class="apartados">
             <p>Subir imagenes al:</p>
           </div>
@@ -37,9 +38,10 @@
           </router-link>
           <router-link to="/sales">
             <a>Hacer corte</a>
-          </router-link>
+          </router-link>          
         </div>
         <div v-else-if="username === 'mesero'">
+          <a style="padding: 5px;">{{ username }}</a>
           <!-- Este se ha de cambiar con la pagina de la caja -->
           <div class="apartados">
             <p>Editar ordenes:</p>
@@ -52,9 +54,10 @@
           </div>
           <router-link to="/">
             <a @click="byeToken">Log out</a>
-          </router-link>
+          </router-link>          
         </div>
         <div v-else-if="username === 'caja'">  
+          <a style="padding: 5px;">{{ username }}</a>
           <!-- Hará falta agregar la parte de la pagina donde se imprimirán los tickets -->
           <div class="apartados">
             <p>Cobrar ordenes:</p>
@@ -73,9 +76,10 @@
           </div>
           <router-link to="/">
             <a @click="byeToken">Log out</a>
-          </router-link>
+          </router-link>          
         </div>
         <div v-else-if="username === 'cocina'">
+          <a style="padding: 5px;">{{ username }}</a>
           <div class="apartados">
             <p>Status de cocina:</p>
           </div>
@@ -87,7 +91,7 @@
           </div>
           <router-link to="/">
             <a @click="byeToken">Log out</a>
-          </router-link>
+          </router-link>          
         </div>        
       </div>
       <div v-else>
@@ -160,8 +164,7 @@ nav {
 }
 
 nav.open {
-  width: 250px;
-  /* Ancho del menú abierto */
+  width: 250px;  
 }
 
 nav a {

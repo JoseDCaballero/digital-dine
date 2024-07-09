@@ -8,5 +8,4 @@ import Cart from '../components/Cart.vue';
     <main>
         <Cart />
     </main>
-    <h3>The orders may take 15 minutes at least</h3>
 </template>    

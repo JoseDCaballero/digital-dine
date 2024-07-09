@@ -79,6 +79,7 @@ onUnmounted(() => {
             {{ item.quantity }} {{ item.name }}
           </li>
         </ul>
+        <p>Folio: {{ order.folio }}</p>
         <button @click="removeOrder(index)">Pedido tomado</button>
       </div>
     </div>

@@ -39,14 +39,15 @@ const addOrder = async () => {
       const totalPrice = cart.value.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
       try {
-        await axios.post(import.meta.env.VITE_API_URL + '/orders/', {
+        const response = await axios.post(import.meta.env.VITE_API_URL + '/orders/', {
           items: orderItems,
           total_price: totalPrice,
           table_number: isInTheRest.value ? parseInt(tableNumber.value) : null,
-          //client_name: isInTheBar.value ? clientName.value : null
+          client_name: isInTheBar.value ? clientName.value : null
         });
 
-        alert("Your order was taken successfully");
+        //alert("Your order was taken successfully. Folio: " + response.data.folio)
+        alert("Your order was taken successfully.");
         router.push("/");
       } catch (error) {
         console.error("There was an error saving your order:", error);
@@ -56,8 +57,7 @@ const addOrder = async () => {
   } else if (isInTheBar.value) {
     if (!nameC.value) {
       alert("Add a name for identification")
-    }
-    else {
+    } else {
       const orderItems = cart.value.map(item => ({
         name: item.name,
         quantity: item.quantity,
@@ -67,14 +67,14 @@ const addOrder = async () => {
       const totalPrice = cart.value.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
       try {
-        await axios.post(import.meta.env.VITE_API_URL + '/orders/', {
+        const response = await axios.post(import.meta.env.VITE_API_URL + '/orders/', {
           items: orderItems,
           total_price: totalPrice,
-          //table_number: isInTheRest.value ? parseInt(tableNumber.value) : null,
+          table_number: isInTheRest.value ? parseInt(tableNumber.value) : null,
           client_name: !isInTheRest.value ? clientName.value : null
         });
 
-        alert("Your order was taken successfully");
+        alert("Your order was taken successfully. Folio: " + response.data.folio);
         router.push("/");
       } catch (error) {
         console.error("There was an error saving your order:", error);
