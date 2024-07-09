@@ -12,39 +12,88 @@
         <img src="/chichen.png" id="imge">
         <h1>DigitalDine</h1>
       </div>
-      <div v-if="!token">
-        <!-- <div class="apartados">
-          
-        </div> -->
-        <router-link to="/login">
-          <a>Log in</a>
-        </router-link>
+      <div v-if="token">
+        <div v-if="username === 'admin'">
+          <div class="apartados">
+            <p>Subir imagenes al:</p>
+          </div>
+          <router-link to="/upload">
+            <a>Restaurant</a>
+          </router-link>
+          <router-link to="/bupload">
+            <a>Bar</a>
+          </router-link>
+          <div class="apartados">
+            <p>Status de cocina:</p>
+          </div>
+          <router-link to="/orders">
+            <a>Pedidos</a>
+          </router-link>
+          <div class="apartados">
+            <p>Cerrar sesión:</p>
+          </div>
+          <router-link to="/">
+            <a @click="byeToken">Log out</a>
+          </router-link>
+          <router-link to="/sales">
+            <a>Hacer corte</a>
+          </router-link>
+        </div>
+        <div v-else-if="username === 'mesero'">
+          <!-- Este se ha de cambiar con la pagina de la caja -->
+          <div class="apartados">
+            <p>Editar ordenes:</p>
+          </div>
+          <router-link to="/order">
+            <a>Ordenes</a>
+          </router-link>
+          <div class="apartados">
+            <p>Cerrar sesión:</p>
+          </div>
+          <router-link to="/">
+            <a @click="byeToken">Log out</a>
+          </router-link>
+        </div>
+        <div v-else-if="username === 'caja'">  
+          <!-- Hará falta agregar la parte de la pagina donde se imprimirán los tickets -->
+          <div class="apartados">
+            <p>Cobrar ordenes:</p>
+          </div>
+          <router-link to="/order">
+            <a>Ordenes activas</a>
+          </router-link>
+          <div class="apartados">
+            <p>Cerrar caja:</p>
+          </div>
+          <router-link to="/sales">
+            <a>Hacer corte</a>
+          </router-link>        
+          <div class="apartados">
+            <p>Cerrar sesión:</p>
+          </div>
+          <router-link to="/">
+            <a @click="byeToken">Log out</a>
+          </router-link>
+        </div>
+        <div v-else-if="username === 'cocina'">
+          <div class="apartados">
+            <p>Status de cocina:</p>
+          </div>
+          <router-link to="/orders">
+            <a>Pedidos</a>
+          </router-link>
+          <div class="apartados">
+            <p>Cerrar sesión:</p>
+          </div>
+          <router-link to="/">
+            <a @click="byeToken">Log out</a>
+          </router-link>
+        </div>        
       </div>
       <div v-else>
-        <div class="apartados">
-          <p>Subir imagenes al:</p>
-        </div>
-        <router-link to="/upload">
-          <a>Restaurant</a>
-        </router-link>
-        <router-link to="/bupload">
-          <a>Bar</a>
-        </router-link>
-        <div class="apartados">
-          <p>Status de cocina:</p>
-        </div>
-        <router-link to="/orders">
-          <a>Pedidos</a>
-        </router-link>
-        <div class="apartados">
-          <p>Cerrar sesión:</p>
-        </div>
-        <router-link to="/">
-          <a @click="byeToken">Log out</a>
-        </router-link>
-        <router-link to="/sales">
-          Hacer corte
-        </router-link>
+        <router-link to="/login">
+          <a>Log in</a>
+        </router-link>        
       </div>
     </nav>
     <div class="separador"></div>
@@ -70,10 +119,13 @@ const byeToken = () => {
 
   if (val) {
     localStorage.removeItem('token');
+    localStorage.removeItem('username');
     alert("Sesión finalizada")
     router.push("/login")
   }
 }
+
+const username = localStorage.getItem('username');
 </script>
 
 <style scoped>
@@ -104,7 +156,7 @@ nav {
   padding-top: 60px;
   /* Alineación con el encabezado */
   transition: width 0.5s ease;
-  overflow-x: hidden;  
+  overflow-x: hidden;
 }
 
 nav.open {
@@ -115,7 +167,7 @@ nav.open {
 nav a {
   display: block;
   color: #f2f2f2;
-  padding: 10px;
+  padding: 8px;
   text-decoration: none;
 }
 
@@ -148,9 +200,9 @@ nav a:hover {
 .apartados {
   background-color: #c4c4c4;
   height: 35px;
-  width:auto;    
-  display:flex;
-  align-items: center;  
+  width: auto;
+  display: flex;
+  align-items: center;
   justify-content: center;
 }
 </style>

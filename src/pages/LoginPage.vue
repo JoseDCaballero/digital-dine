@@ -25,7 +25,6 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 const username = ref('');
 const password = ref('');
-const message = ref('');
 
 const login = async () => {
   try {
@@ -35,6 +34,7 @@ const login = async () => {
     });
 
     localStorage.setItem('token', response.data.token);
+    localStorage.setItem('username', response.data.username);
     alert("Se ha iniciado sesión correctamente");
     router.push("/")
   } catch (error) {

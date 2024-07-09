@@ -16,7 +16,7 @@
             <h3 class="card-title">{{ image.name }}</h3>
             <p class="card-description">{{ image.description }}</p>
             <p class="card-price">Precio: ${{ image.price }}</p>
-            <button v-if="token" class="add-to-cart-button" @click.stop="addToCart(image)">Añadir</button>
+            <button v-if="username === 'mesero'" class="add-to-cart-button" @click.stop="addToCart(image)">Añadir</button>
           </div>
         </div>
       </div>
@@ -36,7 +36,7 @@
       <img :src="expandedImage" alt="Expanded Drink Image">
     </div>
     <!-- Context Menu -->
-    <div v-if="token">
+    <div v-if="username === 'admin'">      
       <div v-if="contextMenuVisible" :style="{ top: `${contextMenuY}px`, left: `${contextMenuX}px` }" class="context-menu">
         <ul>
           <li @click="handleContextMenuAction('edit')">Edit</li>
@@ -80,6 +80,7 @@ import axios from 'axios';
 import Load from '../components/Load.vue';
 import SearchBar from '../components/SearchBar.vue';
 
+const username = localStorage.getItem('username');
 const token = localStorage.getItem('token');
 const images = ref([]);
 const expandedImage = ref(null);

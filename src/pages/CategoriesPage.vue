@@ -16,7 +16,7 @@
             <h3 class="card-title">{{ product.name }}</h3>
             <p class="card-description">{{ product.description }}</p>
             <p class="card-price">Precio: ${{ product.price }}</p>
-            <button v-if="isLogged" class="add-to-cart-button" @click.stop="addToCart(product)">Añadir</button>
+            <button v-if="username === 'mesero'" class="add-to-cart-button" @click.stop="addToCart(product)">Añadir</button>
           </div>
         </div>
       </div>
@@ -36,7 +36,7 @@
       <img :src="expandedImage" alt="Expanded Product Image">
     </div>
     <!-- Context Menu -->
-    <div v-if="isLogged">
+    <div v-if="username === 'admin'">
       <div v-if="contextMenuVisible" :style="{ top: `${contextMenuY}px`, left: `${contextMenuX}px` }" class="context-menu">
         <ul>
           <li @click="handleContextMenuAction('edit')">Edit</li>
@@ -83,6 +83,7 @@ import axios from 'axios';
 import Loading from '../components/Loading.vue';
 import SearchBar from '../components/SearchBar.vue';
 
+const username = localStorage.getItem('username');
 const isLogged = localStorage.getItem('token');
 const products = ref([]);
 const filteredProducts = ref([]);
