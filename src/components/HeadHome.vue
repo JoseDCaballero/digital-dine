@@ -12,9 +12,6 @@
         <img src="/chichen.png" id="imge">
         <h1>DigitalDine</h1>
       </div>
-      <router-link to="/">
-            <a @click="byeToken">Log out</a>
-          </router-link>
       <div v-if="token">
         <div v-if="username === 'admin'">
           <div class="apartados">
