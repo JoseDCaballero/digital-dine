@@ -15,7 +15,7 @@
       </form>
     </div>
   </div>
-  <h3>Esta página es solo para los administrativos del hotel.</h3>
+  <h3>Este apartado es solo para los administrativos del hotel.</h3>
 </template>
 
 <script setup>
