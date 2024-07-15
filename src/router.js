@@ -14,6 +14,7 @@ import {
   OrderPage,
   HistorySales,
   CategoriesPage,
+  RegisterSalePage
 } from './pages/index.js';
 
 const routes = [
@@ -94,6 +95,14 @@ const routes = [
     component: OrderPage,
     meta: {
       title: 'Check orders',
+      layout: DefaultLayout
+    } 
+  },
+  {
+    path: '/order',
+    component: RegisterSalePage,
+    meta: {
+      title: 'Check kitchen orders',
       layout: DefaultLayout
     } 
   },

@@ -1,3 +1,7 @@
+<script setup>
+import Order from '../components/KitchenOrders.vue'
+</script>
+
 <template>
-    <h1>Hola cajero</h1>
+    <Order />
 </template>

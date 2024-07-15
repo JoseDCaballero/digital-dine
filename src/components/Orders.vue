@@ -15,27 +15,21 @@ const fetchOrders = async () => {
   }
 };
 
-let socket;
-
-// Función para eliminar una orden
-const removeOrder = async (orderIndex) => {
-  const confirmar = confirm("¿El pedido está listo?");
-
-  if (confirmar) {
-    try {
-      await axios.delete(import.meta.env.VITE_API_URL + `/orders/${orderIndex}`);
-      orders.value.splice(orderIndex, 1); // Eliminar la orden de la lista de órdenes
-    } catch (error) {
-      console.error("There was an error deleting the order:", error);
-    }
+const finished = () => {
+  const validar = confirm("¿Ya está terminada la orden?")
+  if (validar){
+    alert('Orden "eliminada"')
   }
 };
+
+let socket;
+
 const audio = new Audio('./sounds/notification.mp3');
 // Configuración de WebSocket y montaje del componente
 onMounted(() => {
   fetchOrders();    
-  //socket = new WebSocket('ws://localhost:8000/ws');
-  socket = new WebSocket('wss://apipy-tln4.onrender.com/ws');
+  socket = new WebSocket('ws://localhost:8000/ws');
+  //socket = new WebSocket('wss://apipy-tln4.onrender.com/ws');
 
   socket.onopen = () => {
     console.log('WebSocket connection opened');
@@ -68,19 +62,18 @@ onUnmounted(() => {
 
 <template>
   <div class="orders">
-    <h2>Orders</h2>
+    <h2>Ordenes pendientes</h2>
     <div v-if="orders.length">
       <div class="order" v-for="(order, index) in orders" :key="index">
-        <h3>Order {{ index + 1 }}</h3>
+        <h3>Orden {{ index + 1 }}</h3>
         <p v-if="order.table_number">Numero de mesa: {{ order.table_number }}</p>
         <p v-if="order.client_name">Nombre: {{ order.client_name }}</p>
         <ul>
           <li v-for="item in order.items" :key="item.name">
             {{ item.quantity }} {{ item.name }}
           </li>
-        </ul>
-        <p>Folio: {{ order.folio }}</p>
-        <button @click="removeOrder(index)">Pedido tomado</button>
+        </ul>        
+        <button @click="finished()">Pedido terminado</button>
       </div>
     </div>
     <div v-else>

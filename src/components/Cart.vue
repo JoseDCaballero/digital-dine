@@ -23,11 +23,8 @@ const clearCart = () => {
 };
 
 const addOrder = async () => {
-  let table = document.getElementById("mesa");
-  let nameC = document.getElementById("nombreCliente");
-
   if (isInTheRest.value) {
-    if (!table.value) {
+    if (!tableNumber.value) {
       alert("Add your table number first");
     } else {
       const orderItems = cart.value.map(item => ({
@@ -36,18 +33,21 @@ const addOrder = async () => {
         price: item.price
       }));
 
-      const totalPrice = cart.value.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      const totalAmount = total.value;
 
       try {
         const response = await axios.post(import.meta.env.VITE_API_URL + '/orders/', {
           items: orderItems,
-          total_price: totalPrice,
-          table_number: isInTheRest.value ? parseInt(tableNumber.value) : null,
-          client_name: isInTheBar.value ? clientName.value : null
+          total: totalAmount,
+          total_price: totalAmount, // Este campo será recalculado en el backend
+          table_number: parseInt(tableNumber.value),
+          client_name: clientName.value || null,
+          folio: null,
+          additional_amount: null // Este campo será calculado en el backend
         });
 
-        //alert("Your order was taken successfully. Folio: " + response.data.folio)
-        alert("Your order was taken successfully.");
+        alert("Your order was taken successfully. Folio: " + response.data.folio);
+        clearCart();
         router.push("/");
       } catch (error) {
         console.error("There was an error saving your order:", error);
@@ -55,8 +55,8 @@ const addOrder = async () => {
       }
     }
   } else if (isInTheBar.value) {
-    if (!nameC.value) {
-      alert("Add a name for identification")
+    if (!clientName.value) {
+      alert("Add a name for identification");
     } else {
       const orderItems = cart.value.map(item => ({
         name: item.name,
@@ -64,17 +64,21 @@ const addOrder = async () => {
         price: item.price
       }));
 
-      const totalPrice = cart.value.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      const totalAmount = total.value;
 
       try {
         const response = await axios.post(import.meta.env.VITE_API_URL + '/orders/', {
           items: orderItems,
-          total_price: totalPrice,
-          table_number: isInTheRest.value ? parseInt(tableNumber.value) : null,
-          client_name: !isInTheRest.value ? clientName.value : null
+          total: totalAmount,
+          total_price: totalAmount, // Este campo será recalculado en el backend
+          table_number: null,
+          client_name: clientName.value,
+          folio: null,
+          additional_amount: null // Este campo será calculado en el backend
         });
 
         alert("Your order was taken successfully. Folio: " + response.data.folio);
+        clearCart();
         router.push("/");
       } catch (error) {
         console.error("There was an error saving your order:", error);
@@ -103,7 +107,7 @@ const decrementQuantity = (item) => {
 
 <template>
   <div class="cart">
-    <h2>Your Order</h2>
+    <h2>Confirmar orden</h2>
     <div v-if="cartItems.length">
       <div class="cart-item" v-for="item in cartItems" :key="item.filename">
         <span class="item-name">{{ item.name }} - ${{ item.price }}</span>
@@ -116,13 +120,13 @@ const decrementQuantity = (item) => {
       <div class="table-number-section">
         <div v-if="!isInTheRest">
           <input type="checkbox" class="takeaway" id="barr" v-model="isInTheBar">
-          <label for="barr">I'm in the bar</label>
+          <label for="barr">Para el bar</label>
           <input v-if="isInTheBar" class="table-number-input" type="name" placeholder="Type your first name"
             id="nombreCliente" v-model="clientName">
         </div>
         <div v-if="!isInTheBar">
           <input type="checkbox" class="takeaway" id="resta" v-model="isInTheRest">
-          <label for="resta">I'm in the restaurant</label>
+          <label for="resta">Para el restaurante</label>
           <input v-if="isInTheRest" class="table-number-input" type="number" placeholder="Type your table number"
             id="mesa" v-model="tableNumber">
         </div>
@@ -134,7 +138,7 @@ const decrementQuantity = (item) => {
       </div>
     </div>
     <div v-else>
-      <p class="empty-cart-message">It's going to be shown here<br>It's empty BTW</p>
+      <p class="empty-cart-message">Aún no hay nada agregado.</p>
     </div>
   </div>
 </template>

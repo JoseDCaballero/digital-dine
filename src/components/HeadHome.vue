@@ -38,7 +38,7 @@
           </router-link>
           <router-link to="/sales">
             <a>Hacer corte</a>
-          </router-link>          
+          </router-link>
         </div>
         <div v-else-if="username === 'mesero'">
           <a style="padding: 5px;">{{ username }}</a>
@@ -54,9 +54,9 @@
           </div>
           <router-link to="/">
             <a @click="byeToken">Log out</a>
-          </router-link>          
+          </router-link>
         </div>
-        <div v-else-if="username === 'caja'">  
+        <div v-else-if="username === 'caja'">
           <a style="padding: 5px;">{{ username }}</a>
           <!-- Hará falta agregar la parte de la pagina donde se imprimirán los tickets -->
           <div class="apartados">
@@ -70,13 +70,13 @@
           </div>
           <router-link to="/sales">
             <a>Hacer corte</a>
-          </router-link>        
+          </router-link>
           <div class="apartados">
             <p>Cerrar sesión:</p>
           </div>
           <router-link to="/">
             <a @click="byeToken">Log out</a>
-          </router-link>          
+          </router-link>
         </div>
         <div v-else-if="username === 'cocina'">
           <a style="padding: 5px;">{{ username }}</a>
@@ -91,13 +91,21 @@
           </div>
           <router-link to="/">
             <a @click="byeToken">Log out</a>
-          </router-link>          
-        </div>        
+          </router-link>
+        </div>
       </div>
       <div v-else>
+        <div class="apartados">
+          <p>Iniciar sesión:</p>
+        </div>
         <router-link to="/login">
           <a>Log in</a>
-        </router-link>        
+        </router-link>
+        <div class="apartados">
+          <p>Quejas, sugerencias</p>
+        </div>
+        <a>+52 998 887 2495</a>
+        <a href="https://mail.google.com/mail/u/0/#inbox?compose=CllgCJvrcNJmTknRPnPSNCPlPrxJQVFMkNGZjGWgNCcpVqhrCdWncsbQCRWQsGgVStJvxhnBljq" target="_blank">info@mayaland.com</a>
       </div>
     </nav>
     <div class="separador"></div>
@@ -164,7 +172,7 @@ nav {
 }
 
 nav.open {
-  width: 250px;  
+  width: 250px;
 }
 
 nav a {

@@ -1,4 +1,4 @@
-<template>
+<template>  
   <div class="login-container">
     <div class="login-card">
       <h2>Login</h2>
@@ -15,6 +15,7 @@
       </form>
     </div>
   </div>
+  <h3>Esta página es solo para los administrativos del hotel.</h3>
 </template>
 
 <script setup>
@@ -50,11 +51,13 @@ const login = async () => {
 .login-container {
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* Cambiar de center a flex-start */
-  height: 100vh;
+  align-items: flex-start;
+  /* Cambiar de center a flex-start */
+  height: 50vh;
   background-color: #f5f7fa;
   font-family: 'Roboto', sans-serif;
-  padding-top: 130px; /* Ajustar el valor según sea necesario */
+  padding-top: 130px;
+  /* Ajustar el valor según sea necesario */
 }
 
 .login-card {
@@ -67,7 +70,8 @@ const login = async () => {
   max-width: 400px;
   animation: slideIn 0.5s ease-in-out;
   position: relative;
-  top: -100px; /* Ajustar el valor para que aparezca más arriba */
+  top: -100px;
+  /* Ajustar el valor para que aparezca más arriba */
 }
 
 h2 {
@@ -126,6 +130,7 @@ input:focus {
     transform: translateY(20px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
