@@ -105,7 +105,7 @@
           <p>Quejas, sugerencias</p>
         </div>
         <a>+52 998 887 2495</a>
-        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=info@mayaland.com&su=Asunto%20del%20correo&body=Este%20es%20el%20cuerpo%20del%20mensaje" target="_blank">info@mayaland.com</a>
+        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=info@mayaland.com&su=Asunto%20del%20correo&body=Este%20es%20el%20cuerpo%20del%20mensaje" target="_blank" id="gmail-link">info@mayaland.com</a>
       </div>
     </nav>
     <div class="separador"></div>
@@ -136,6 +136,18 @@ const byeToken = () => {
     router.push("/login")
   }
 }
+
+function isMobileDevice() {
+            return /Mobi|Android/i.test(navigator.userAgent);
+        }
+
+        // Ajustar el enlace para dispositivos móviles
+        document.addEventListener('DOMContentLoaded', function() {
+            if (isMobileDevice()) {
+                var gmailLink = document.getElementById('gmail-link');
+                gmailLink.href = 'mailto:info@mayaland.com?subject=Asunto%20del%20correo&body=Este%20es%20el%20cuerpo%20del%20mensaje';
+            }
+        });
 
 const username = localStorage.getItem('username');
 </script>
