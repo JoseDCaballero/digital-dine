@@ -105,7 +105,7 @@
           <p>Quejas, sugerencias</p>
         </div>
         <a>+52 998 887 2495</a>
-        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=info@mayaland.com" target="_blank">info@mayaland.com</a>
+        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=info@mayaland.com&su=Asunto%20del%20correo&body=Este%20es%20el%20cuerpo%20del%20mensaje" target="_blank">info@mayaland.com</a>
       </div>
     </nav>
     <div class="separador"></div>
