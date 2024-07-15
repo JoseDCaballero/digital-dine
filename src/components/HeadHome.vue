@@ -105,7 +105,7 @@
           <p>Quejas, sugerencias</p>
         </div>
         <a>+52 998 887 2495</a>
-        <a href="#" @click="openGmail()">info@mayaland.com</a>
+        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=info@mayaland.com" target="_blank">info@mayaland.com</a>
       </div>
     </nav>
     <div class="separador"></div>
@@ -134,30 +134,6 @@ const byeToken = () => {
     localStorage.removeItem('username');
     alert("Sesión finalizada")
     router.push("/login")
-  }
-}
-
-function openGmail() {
-  var email = 'info@mayaland.com';
-  var subject = 'Asunto del correo';
-  var body = 'Este es el cuerpo del mensaje';
-
-  // Detectar si el dispositivo es móvil
-  var isMobile = /Mobi|Android/i.test(navigator.userAgent);
-
-  if (isMobile) {
-    // Abrir en Gmail en móviles
-    var gmailAppLink = 'googlegmail:///co?to=' + encodeURIComponent(email) + '&subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
-    window.location.href = gmailAppLink;
-
-    // Fallback si el link no abre la app de Gmail
-    setTimeout(function () {
-      window.location.href = 'https://mail.google.com/mail/?view=cm&fs=1&to=' + encodeURIComponent(email) + '&su=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
-    }, 1000);
-  } else {
-    // Abrir en Gmail en navegadores de escritorio
-    var gmailWebLink = 'https://mail.google.com/mail/?view=cm&fs=1&to=' + encodeURIComponent(email) + '&su=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
-    window.open(gmailWebLink, '_blank');
   }
 }
 
