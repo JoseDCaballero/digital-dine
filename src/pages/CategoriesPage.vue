@@ -12,7 +12,7 @@
             <h3 class="card-title">{{ product.name }}</h3>
             <p class="card-description">{{ product.description }}</p>
             <p class="card-price">Precio: ${{ product.price }}</p>
-            <button v-if="username === 'mesero'" class="add-to-cart-button"
+            <button v-if="username === 'mesero' && isLogged" class="add-to-cart-button"
               @click.stop="addToCart(product)">Añadir</button>
           </div>
         </div>

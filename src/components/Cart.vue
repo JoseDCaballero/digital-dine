@@ -144,7 +144,6 @@ const decrementQuantity = (item) => {
 </template>
 
 <style scoped>
-/* Estilo general del carrito */
 .cart {
   max-width: 600px;
   margin: 0 auto;

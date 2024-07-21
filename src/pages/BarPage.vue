@@ -12,7 +12,7 @@
             <h3 class="card-title">{{ image.name }}</h3>
             <p class="card-description">{{ image.description }}</p>
             <p class="card-price">Precio: ${{ image.price }}</p>
-            <button v-if="username === 'mesero'" class="add-to-cart-button"
+            <button v-if="username === 'mesero' && token" class="add-to-cart-button"
               @click.stop="addToCart(image)">Añadir</button>
           </div>
         </div>

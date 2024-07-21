@@ -9,27 +9,32 @@
           <p v-if="order.client_name">Nombre: {{ order.client_name }}</p>
           <ul>
             <li v-for="item in order.items" :key="item.name">
-              {{ item.quantity }} {{ item.name }}
+              {{ item.quantity }} {{ item.name }} - ${{ item.price.toFixed(2) }}
             </li>
-          </ul>             
-          <p v-if="username === 'caja'">Folio: {{ order.folio }}</p>
-          <p>Total de la orden: ${{ order.total }}</p>          
-          <p v-if="username === 'caja'">10% propina: ${{ order.additional_amount.toFixed(2) }}</p>
-          <p v-if="username === 'caja'">Precio final: ${{ order.total_price }}</p>                 
-          <button v-if="username === 'caja'" @click="removeOrder(index)">Cobrar orden</button>
-          <button v-if="username === 'mesero'" @click="toggleEditMode(index)">Editar Pedido</button>
+          </ul>
+          <p v-if="username === 'caja' && token">Folio: {{ order.folio }}</p>
+          <p>Total de la orden: ${{ order.total.toFixed(2) }}</p>
+          <button v-if="username === 'caja' && token" @click="removeOrder(index)">Cobrar orden</button>
+          <button v-if="username === 'mesero' && token" @click="toggleEditMode(index)">Editar Pedido</button>
         </div>
         <div v-else>
-          <input v-model="order.table_number" placeholder="Numero de mesa" />
+          <input v-model.number="order.table_number" placeholder="Numero de mesa" />
           <input v-model="order.client_name" placeholder="Nombre del cliente" />
+          <p>Cantidad | Precio</p>
           <ul>
             <li v-for="item in order.items" :key="item.name">
-              <input v-model="item.quantity" placeholder="Cantidad" /> {{ item.name }}
+              {{ item.name }}<br>
+              <input v-model.number="item.quantity" placeholder="Cantidad" />
+              <input v-model.number="item.price" placeholder="Precio" />
             </li>
           </ul>
           <div>
+            <label>Ingresa nombre</label>
             <input v-model="newProduct.name" placeholder="Nuevo Producto" />
-            <input v-model="newProduct.quantity" placeholder="Cantidad" type="number" />
+            <label>Ingresa cantidad</label>
+            <input v-model.number="newProduct.quantity" placeholder="Cantidad" type="number" />
+            <label>Ingresa precio</label>
+            <input v-model.number="newProduct.price" placeholder="Precio" type="number" /><br>
             <button @click="addNewItem(order)">Agregar Producto</button>
           </div>
           <button @click="handleUpdateOrder(order.folio, order)">Guardar Cambios</button>
@@ -47,13 +52,12 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import axios from 'axios';
 
-// Crear una referencia para las órdenes
 const orders = ref([]);
 const editIndex = ref(null);
-const newProduct = ref({ name: '', quantity: 1 });
+const newProduct = ref({ name: '', quantity: 1, price: 0 });
 const username = localStorage.getItem('username');
+const token = localStorage.getItem('token');
 
-// Función para obtener las órdenes
 const fetchOrders = async () => {
   try {
     const response = await axios.get(import.meta.env.VITE_API_URL + '/orders/');
@@ -64,17 +68,30 @@ const fetchOrders = async () => {
 };
 
 const removeOrder = async (orderIndex) => {
-    try {
-      await axios.delete(import.meta.env.VITE_API_URL + `/orders/${orderIndex}`);
-      orders.value.splice(orderIndex, 1); // Eliminar la orden de la lista de órdenes
-    } catch (error) {
-      console.error("There was an error deleting the order:", error);
-    }
+  try {
+    await axios.delete(import.meta.env.VITE_API_URL + `/orders/${orderIndex}`);
+    orders.value.splice(orderIndex, 1);
+  } catch (error) {
+    console.error("There was an error deleting the order:", error);
+  }
 };
 
 const updateOrder = async (folio, updatedOrder) => {
   try {
-    const response = await axios.put(`${import.meta.env.VITE_API_URL}/orders/${folio}`, updatedOrder);    
+    console.log('Updating order:', updatedOrder); // Imprime los datos enviados
+    const response = await axios.put(`${import.meta.env.VITE_API_URL}/orders/${folio}`, {
+      items: updatedOrder.items.map(item => ({
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price  // Agregar el campo de precio
+      })),
+      total: updatedOrder.total,
+      total_price: updatedOrder.total_price,
+      table_number: updatedOrder.table_number,
+      client_name: updatedOrder.client_name,
+      folio: updatedOrder.folio,
+      additional_amount: updatedOrder.additional_amount
+    });
     fetchOrders(); // Volver a cargar las órdenes para reflejar los cambios
   } catch (error) {
     console.error("There was an error updating the order:", error);
@@ -87,24 +104,33 @@ const toggleEditMode = (index) => {
 };
 
 const handleUpdateOrder = (folio, updatedOrder) => {
+  // Calcular nuevos totales antes de enviar la solicitud
+  const newTotal = updatedOrder.items.reduce((acc, item) => acc + item.quantity * item.price, 0);
+  updatedOrder.total = newTotal;
+  updatedOrder.total_price = newTotal; // Ajustar si es necesario
+
   updateOrder(folio, updatedOrder);
-  editIndex.value = null; // Salir del modo de edición
+  editIndex.value = null;
 };
 
 const addNewItem = (order) => {
-  if (newProduct.value.name && newProduct.value.quantity > 0) {
-    order.items.push({ name: newProduct.value.name, quantity: newProduct.value.quantity });
+  if (newProduct.value.name && newProduct.value.quantity > 0 && newProduct.value.price > 0) {
+    order.items.push({ name: newProduct.value.name, quantity: newProduct.value.quantity, price: newProduct.value.price });
     newProduct.value.name = '';
     newProduct.value.quantity = 1;
+    newProduct.value.price = 0;
+
+    // Calcular nuevos totales
+    order.total = order.items.reduce((acc, item) => acc + item.quantity * item.price, 0);
+    order.total_price = order.total; // Ajustar si es necesario
   }
 };
 
 let socket;
 
-// Configuración de WebSocket y montaje del componente
 onMounted(() => {
   fetchOrders();
-  socket = new WebSocket('ws://localhost:8000/ws');
+  socket = new WebSocket(import.meta.env.VITE_URL);
 
   socket.onopen = () => {
     console.log('WebSocket connection opened');
@@ -126,7 +152,6 @@ onMounted(() => {
   };
 });
 
-// Desmontaje del componente y cierre del WebSocket
 onUnmounted(() => {
   if (socket) {
     socket.close();
