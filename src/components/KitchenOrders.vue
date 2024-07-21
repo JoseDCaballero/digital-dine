@@ -14,10 +14,12 @@
           </ul>
           <p v-if="username === 'caja' && token">Folio: {{ order.folio }}</p>
           <p>Total de la orden: ${{ order.total.toFixed(2) }}</p>
-          <button v-if="username === 'caja' && token" @click="removeOrder(index)">Cobrar orden</button>
+          <!-- <button v-if="username === 'caja' && token" @click="generateTicket(order)">Generar Ticket</button> -->
+          <button v-if="username === 'caja' && token" @click="removeOrder(index), generateTicket(order)">Cobrar orden</button>
           <button v-if="username === 'mesero' && token" @click="toggleEditMode(index)">Editar Pedido</button>
         </div>
         <div v-else>
+          <!-- Campos para edición de orden -->
           <input v-model.number="order.table_number" placeholder="Numero de mesa" />
           <input v-model="order.client_name" placeholder="Nombre del cliente" />
           <p>Cantidad | Precio</p>
@@ -78,21 +80,18 @@ const removeOrder = async (orderIndex) => {
 
 const updateOrder = async (folio, updatedOrder) => {
   try {
-    console.log('Updating order:', updatedOrder); // Imprime los datos enviados
     const response = await axios.put(`${import.meta.env.VITE_API_URL}/orders/${folio}`, {
       items: updatedOrder.items.map(item => ({
         name: item.name,
         quantity: item.quantity,
-        price: item.price  // Agregar el campo de precio
+        price: item.price
       })),
       total: updatedOrder.total,
-      total_price: updatedOrder.total_price,
       table_number: updatedOrder.table_number,
       client_name: updatedOrder.client_name,
-      folio: updatedOrder.folio,
-      additional_amount: updatedOrder.additional_amount
+      folio: updatedOrder.folio
     });
-    fetchOrders(); // Volver a cargar las órdenes para reflejar los cambios
+    fetchOrders();
   } catch (error) {
     console.error("There was an error updating the order:", error);
     alert("Si no le sabes, mejor no le muevas");
@@ -104,10 +103,8 @@ const toggleEditMode = (index) => {
 };
 
 const handleUpdateOrder = (folio, updatedOrder) => {
-  // Calcular nuevos totales antes de enviar la solicitud
   const newTotal = updatedOrder.items.reduce((acc, item) => acc + item.quantity * item.price, 0);
   updatedOrder.total = newTotal;
-  updatedOrder.total_price = newTotal; // Ajustar si es necesario
 
   updateOrder(folio, updatedOrder);
   editIndex.value = null;
@@ -120,10 +117,34 @@ const addNewItem = (order) => {
     newProduct.value.quantity = 1;
     newProduct.value.price = 0;
 
-    // Calcular nuevos totales
     order.total = order.items.reduce((acc, item) => acc + item.quantity * item.price, 0);
-    order.total_price = order.total; // Ajustar si es necesario
   }
+};
+
+const generateTicket = (order) => {
+  const itemsList = order.items.map(item => `
+    <li>${item.quantity} ${item.name} - $${(item.quantity * item.price).toFixed(2)}</li>
+  `).join('');
+
+  const ticketContent = `
+  <main style="text-align:center;">
+    <h1>Ticket de Venta</h1>
+    <p>Folio: ${order.folio}</p>
+    <p>Descripción de la orden:</p>
+    <ul>
+      ${itemsList}
+    </ul>
+    <p>Total: $${order.total.toFixed(2)}</p>
+    <p>*Propina no incluida*</p>
+  </main>  
+  `;
+
+  const newWindow = window.open('', '', 'width=600,height=400');
+  newWindow.document.write('<html><head><title>Posada Chichén Itzá</title></head><body>');
+  newWindow.document.write(ticketContent);
+  newWindow.document.write('</body></html>');
+  newWindow.document.close();
+  newWindow.print();
 };
 
 let socket;
@@ -158,6 +179,10 @@ onUnmounted(() => {
   }
 });
 </script>
+
+<style scoped>
+/* Estilos aquí */
+</style>
 
 <style scoped>
 .orders {
