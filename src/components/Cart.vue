@@ -15,7 +15,7 @@ const cartItems = computed(() => cart.value);
 const total = computed(() => cart.value.reduce((sum, item) => sum + item.price * item.quantity, 0));
 
 const clearCart = () => {
-  let conf = confirm("Do you agree to delete your cart?");
+  let conf = confirm("¿Eliminar orden?");
   if (conf) {
     localStorage.removeItem('cart');
     cart.value = [];
@@ -45,9 +45,7 @@ const addOrder = async () => {
           folio: null,
           additional_amount: null // Este campo será calculado en el backend
         });
-
-        alert("Your order was taken successfully. Folio: " + response.data.folio);
-        clearCart();
+        alert("Orden tomada correctamente");
         router.push("/");
       } catch (error) {
         console.error("There was an error saving your order:", error);
@@ -76,9 +74,7 @@ const addOrder = async () => {
           folio: null,
           additional_amount: null // Este campo será calculado en el backend
         });
-
-        alert("Your order was taken successfully. Folio: " + response.data.folio);
-        clearCart();
+        alert("Orden tomada correctamente");
         router.push("/");
       } catch (error) {
         console.error("There was an error saving your order:", error);
@@ -86,7 +82,7 @@ const addOrder = async () => {
       }
     }
   } else {
-    alert("Choose your location");
+    alert("Elige el lugar donde te encuentras");
   }
 };
 
@@ -121,13 +117,13 @@ const decrementQuantity = (item) => {
         <div v-if="!isInTheRest">
           <input type="checkbox" class="takeaway" id="barr" v-model="isInTheBar">
           <label for="barr">Para el bar</label>
-          <input v-if="isInTheBar" class="table-number-input" type="name" placeholder="Type your first name"
+          <input v-if="isInTheBar" class="table-number-input" type="name" placeholder="Escribe nombre"
             id="nombreCliente" v-model="clientName">
         </div>
         <div v-if="!isInTheBar">
           <input type="checkbox" class="takeaway" id="resta" v-model="isInTheRest">
           <label for="resta">Para el restaurante</label>
-          <input v-if="isInTheRest" class="table-number-input" type="number" placeholder="Type your table number"
+          <input v-if="isInTheRest" class="table-number-input" type="number" placeholder="Escribe numero de mesa"
             id="mesa" v-model="tableNumber">
         </div>
       </div>

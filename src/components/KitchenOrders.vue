@@ -14,20 +14,21 @@
           </ul>
           <p v-if="username === 'caja' && token">Folio: {{ order.folio }}</p>
           <p>Total de la orden: ${{ order.total.toFixed(2) }}</p>
-          <!-- <button v-if="username === 'caja' && token" @click="generateTicket(order)">Generar Ticket</button> -->
-          <button v-if="username === 'caja' && token" @click="removeOrder(index), generateTicket(order)">Cobrar orden</button>
+          <button v-if="username === 'caja' && token" @click="removeOrder(index), generateTicket(order)">Cobrar
+            orden</button>
+          <button v-if="username === 'mesero' && token" @click="removeOrder(index, false)">Cancelar orden</button>
           <button v-if="username === 'mesero' && token" @click="toggleEditMode(index)">Editar Pedido</button>
         </div>
         <div v-else>
           <!-- Campos para edición de orden -->
-          <input v-model.number="order.table_number" placeholder="Numero de mesa" />
-          <input v-model="order.client_name" placeholder="Nombre del cliente" />
-          <p>Cantidad | Precio</p>
+          <!-- <input v-model.number="order.table_number" placeholder="Numero de mesa" />
+          <input v-model="order.client_name" placeholder="Nombre del cliente" /> -->
+          <p>Cantidades</p>
           <ul>
             <li v-for="item in order.items" :key="item.name">
               {{ item.name }}<br>
               <input v-model.number="item.quantity" placeholder="Cantidad" />
-              <input v-model.number="item.price" placeholder="Precio" />
+              <!-- <input v-model.number="item.price" placeholder="Precio" /> -->
             </li>
           </ul>
           <div>
@@ -52,7 +53,6 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
-import axios from 'axios';
 
 const orders = ref([]);
 const editIndex = ref(null);
@@ -69,12 +69,17 @@ const fetchOrders = async () => {
   }
 };
 
-const removeOrder = async (orderIndex) => {
-  try {
-    await axios.delete(import.meta.env.VITE_API_URL + `/orders/${orderIndex}`);
-    orders.value.splice(orderIndex, 1);
-  } catch (error) {
-    console.error("There was an error deleting the order:", error);
+const removeOrder = async (orderIndex, recordSale = true) => {
+  const balidad = confirm("¿Deseas continuar con la acción?")
+  if (balidad) {
+    try {
+      await axios.delete(import.meta.env.VITE_API_URL + `/orders/${orderIndex}`, {
+        params: { record_sale_flag: recordSale },
+      });
+      orders.value.splice(orderIndex, 1);
+    } catch (error) {
+      console.error("There was an error deleting the order:", error);
+    }
   }
 };
 
@@ -84,14 +89,16 @@ const updateOrder = async (folio, updatedOrder) => {
       items: updatedOrder.items.map(item => ({
         name: item.name,
         quantity: item.quantity,
-        price: item.price
+        price: item.price  // Agregar el campo de precio
       })),
       total: updatedOrder.total,
+      total_price: updatedOrder.total_price,
       table_number: updatedOrder.table_number,
       client_name: updatedOrder.client_name,
-      folio: updatedOrder.folio
+      folio: updatedOrder.folio,
+      additional_amount: updatedOrder.additional_amount
     });
-    fetchOrders();
+    fetchOrders(); // Volver a cargar las órdenes para reflejar los cambios
   } catch (error) {
     console.error("There was an error updating the order:", error);
     alert("Si no le sabes, mejor no le muevas");

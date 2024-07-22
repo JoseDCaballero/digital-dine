@@ -1,8 +1,8 @@
 <template>
     <main>
-        <h1>Page {{$route.params.pathMatch}} does not exist</h1>
+        <h1>La página {{$route.params.pathMatch}} no existe</h1>
         <router-link to="/">
-            <button class="estilo">Go to homepage</button>
+            <button class="estilo">Regresar</button>
         </router-link>        
     </main>
 </template>
