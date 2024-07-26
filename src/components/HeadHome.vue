@@ -13,6 +13,9 @@
         <h1>DigitalDine</h1>
       </div>
       <div v-if="token">
+        <router-link to="/">
+            <a @click="byeToken">Log out</a>
+          </router-link>
         <div v-if="username === 'admin'">
           <a style="padding: 5px;">{{ username }}</a>
           <div class="apartados">
