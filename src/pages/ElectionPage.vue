@@ -1,14 +1,14 @@
 <template>
   <h1>Seleccione uno para ver el menú correspondiente</h1>
   <main>
-    <div class="window">
+    <div class="window" title="Menú del restaurante">
       <router-link to="/restaurant" id="a">
         <div id="lugares">
           <h1>Restaurant</h1>
         </div>
       </router-link>
     </div>
-    <div class="window1">
+    <div class="window1" title="Menú del bar">
       <router-link to="/bar" id="a">
         <div id="lugares">
           <h1>Bar</h1>

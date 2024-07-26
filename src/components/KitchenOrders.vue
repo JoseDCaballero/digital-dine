@@ -14,8 +14,7 @@
           </ul>
           <p v-if="username === 'caja' && token">Folio: {{ order.folio }}</p>
           <p>Total de la orden: ${{ order.total.toFixed(2) }}</p>
-          <button v-if="username === 'caja' && token" @click="removeOrder(index), generateTicket(order)">Cobrar
-            orden</button>
+          <button v-if="username === 'caja' && token" @click="removeOrder(index), generateTicket(order)">Cobrar orden</button>
           <button v-if="username === 'mesero' && token" @click="removeOrder(index, false)">Cancelar orden</button>
           <button v-if="username === 'mesero' && token" @click="toggleEditMode(index)">Editar Pedido</button>
         </div>
@@ -53,6 +52,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
+import axios from 'axios'
 
 const orders = ref([]);
 const editIndex = ref(null);

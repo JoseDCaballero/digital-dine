@@ -15,11 +15,8 @@ const fetchOrders = async () => {
   }
 };
 
-const finished = () => {
-  const validar = confirm("¿Ya está terminada la orden?")
-  if (validar){
-    alert('Orden "eliminada"')
-  }
+const colorIt = (index) => {
+  orders.value[index].backgroundColor = 'red';
 };
 
 let socket;
@@ -27,7 +24,7 @@ let socket;
 const audio = new Audio('./sounds/notification.mp3');
 // Configuración de WebSocket y montaje del componente
 onMounted(() => {
-  fetchOrders();    
+  fetchOrders();
   socket = new WebSocket(import.meta.env.VITE_URL);
 
   socket.onopen = () => {
@@ -36,7 +33,7 @@ onMounted(() => {
 
   socket.onmessage = (event) => {
     const data = JSON.parse(event.data);
-    if (data.message === "New order added") {      
+    if (data.message === "New order added") {
       audio.play();
       fetchOrders();
     }
@@ -63,7 +60,8 @@ onUnmounted(() => {
   <div class="orders">
     <h2>Ordenes pendientes</h2>
     <div v-if="orders.length">
-      <div class="order" v-for="(order, index) in orders" :key="index">
+      <div v-for="(order, index) in orders" :key="index" :ref="'order-' + index"
+        :style="{ backgroundColor: order.backgroundColor || '#f9f9f9' }">
         <h3>Orden {{ index + 1 }}</h3>
         <p v-if="order.table_number">Numero de mesa: {{ order.table_number }}</p>
         <p v-if="order.client_name">Nombre: {{ order.client_name }}</p>
@@ -71,8 +69,8 @@ onUnmounted(() => {
           <li v-for="item in order.items" :key="item.name">
             {{ item.quantity }} {{ item.name }}
           </li>
-        </ul>        
-        <button @click="finished()">Pedido terminado</button>
+        </ul>
+        <button @click="colorIt(index)">Pedido terminado</button>
       </div>
     </div>
     <div v-else>
@@ -99,7 +97,7 @@ onUnmounted(() => {
   margin-bottom: 20px;
 }
 
-.order {
+.orders {
   margin-bottom: 20px;
   padding: 10px;
   border: 1px solid #eee;
@@ -107,26 +105,26 @@ onUnmounted(() => {
   background-color: #f9f9f9;
 }
 
-.order h3 {
+.orders h3 {
   margin-top: 0;
   color: #333;
 }
 
-.order ul {
+.orders ul {
   padding-left: 20px;
 }
 
-.order li {
+.orders li {
   margin-bottom: 5px;
   color: #555;
 }
 
-.order p {
+.orders p {
   font-weight: bold;
   margin-bottom: 10px;
 }
 
-.order button {
+.orders button {
   margin-top: 10px;
   padding: 5px 10px;
   background-color: #28a745;
@@ -136,7 +134,7 @@ onUnmounted(() => {
   cursor: pointer;
 }
 
-.order button:hover {
+.orders button:hover {
   background-color: #218838;
 }
 </style>

@@ -4,7 +4,9 @@
     <div v-if="salesData">
       <h2>Total acumulado de ventas: ${{ salesData.total_sales_price_accumulated }}</h2>
       <ul>
-        <li v-for="item in salesData.items_sold" :key="item">{{ item }}</li>
+        <li v-for="item in salesData.total_items_details" :key="item.name">
+          {{ item.name }}: {{ item.quantity }}
+        </li>
       </ul>
       <div v-if="salesData.sales_records">
         <div v-for="record in salesData.sales_records" :key="record.date" class="sales-record-item">
@@ -12,7 +14,9 @@
           <p>Monto de venta: ${{ record.total_sales_price }}</p>
           <h4>Descripción de la orden:</h4>
           <ul>
-            <li v-for="item in record.items_sold" :key="item">{{ item }}</li>
+            <li v-for="item in record.items_details" :key="item.name">
+              {{ item.quantity }} {{ item.name }}
+            </li>
           </ul>
         </div>
       </div>
@@ -40,7 +44,7 @@ const fetchSalesData = async () => {
 };
 
 const deleteSalesRecords = async () => {
-  const confi = confirm("¿Seguro quiere eliminar ventas del día?")
+  const confi = confirm("¿Seguro quiere eliminar ventas del día?");
   if (confi) {
     try {
       await axios.delete(import.meta.env.VITE_API_URL + '/sales/');
