@@ -59,6 +59,7 @@ onUnmounted(() => {
 <template>
   <div class="orders">
     <h2>Ordenes pendientes</h2>
+    <h1>NO RECARGAR LA PÁGINA</h1>
     <div v-if="orders.length">
       <div v-for="(order, index) in orders" :key="index" :ref="'order-' + index"
         :style="{ backgroundColor: order.backgroundColor || '#f9f9f9' }">
