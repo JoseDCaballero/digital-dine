@@ -156,6 +156,7 @@ const generateTicket = (order) => {
 
 let socket;
 
+const audio = new Audio('./sounds/notification.mp3');
 onMounted(() => {
   fetchOrders();
   socket = new WebSocket(import.meta.env.VITE_URL);
@@ -167,6 +168,7 @@ onMounted(() => {
   socket.onmessage = (event) => {
     const data = JSON.parse(event.data);
     if (data.message === "New order added") {
+      audio.play();
       fetchOrders();
     }
   };
