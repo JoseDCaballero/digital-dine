@@ -25,7 +25,7 @@ const clearCart = () => {
 const addOrder = async () => {
   if (isInTheRest.value) {
     if (!tableNumber.value) {
-      alert("Add your table number first");
+      alert("Añade el numero de mesa para identificación");
     } else {
       const orderItems = cart.value.map(item => ({
         name: item.name,
@@ -54,7 +54,7 @@ const addOrder = async () => {
     }
   } else if (isInTheBar.value) {
     if (!clientName.value) {
-      alert("Add a name for identification");
+      alert("Escribe el nombre a quien responde la orden");
     } else {
       const orderItems = cart.value.map(item => ({
         name: item.name,

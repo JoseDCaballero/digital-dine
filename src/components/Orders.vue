@@ -22,7 +22,7 @@ const colorIt = (index) => {
 let socket;
 
 const audio = new Audio('./sounds/notification.mp3');
-// Configuración de WebSocket y montaje del componente
+// Cambiar sonido 
 onMounted(() => {
   fetchOrders();
   socket = new WebSocket(import.meta.env.VITE_URL);

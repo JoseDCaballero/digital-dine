@@ -14,7 +14,8 @@
           </ul>
           <p v-if="username === 'caja' && token">Folio: {{ order.folio }}</p>
           <p>Total de la orden: ${{ order.total.toFixed(2) }}</p>
-          <button v-if="username === 'caja' && token" @click="removeOrder(index), generateTicket(order)">Cobrar orden</button>
+          <button v-if="username === 'caja' && token" @click="removeOrder(index), generateTicket(order)">Cobrar
+            orden</button>
           <button v-if="username === 'mesero' && token" @click="removeOrder(index, false)">Cancelar orden</button>
           <button v-if="username === 'mesero' && token" @click="toggleEditMode(index)">Editar Pedido</button>
         </div>
@@ -26,7 +27,7 @@
           <ul>
             <li v-for="item in order.items" :key="item.name">
               {{ item.name }}<br>
-              <input v-model.number="item.quantity" placeholder="Cantidad" />
+              <input v-model.number="item.quantity" placeholder="Cantidad" type="number" />
               <!-- <input v-model.number="item.price" placeholder="Precio" /> -->
             </li>
           </ul>
@@ -130,21 +131,34 @@ const addNewItem = (order) => {
 
 const generateTicket = (order) => {
   const itemsList = order.items.map(item => `
-    <li>${item.quantity} ${item.name} - $${(item.quantity * item.price).toFixed(2)}</li>
-  `).join('');
+  <tr>
+    <td style="border: 1px solid black; padding: 8px;">${item.quantity}</td>
+    <td style="border: 1px solid black; padding: 8px;">${item.name}</td>
+    <td style="border: 1px solid black; padding: 8px;">$${(item.quantity * item.price).toFixed(2)}</td>
+  </tr>
+`).join('');
 
-  const ticketContent = `
-  <main style="text-align:center;">
-    <h1>Ticket de Venta</h1>
-    <p>Folio: ${order.folio}</p>
-    <p>Descripción de la orden:</p>
-    <ul>
+const ticketContent = `
+<main style="text-align:center;">
+  <h1>Ticket de Venta</h1>
+  <p>Folio: ${order.folio}</p>
+  <p>Descripción de la orden:</p>
+  <table style="margin: 0 auto; border-collapse: collapse; width: 80%; border: 1px solid black;">
+    <thead>
+      <tr>
+        <th style="border: 1px solid black; padding: 8px;">Cantidad</th>
+        <th style="border: 1px solid black; padding: 8px;">Producto</th>
+        <th style="border: 1px solid black; padding: 8px;">Precio</th>
+      </tr>
+    </thead>
+    <tbody>
       ${itemsList}
-    </ul>
-    <p>Total: $${order.total.toFixed(2)}</p>
-    <p>*Propina no incluida*</p>
-  </main>  
-  `;
+    </tbody>
+  </table>
+  <strong><h3>Total: $${order.total.toFixed(2)}</h3></strong>
+  <p>*Propina no incluida*</p>
+</main>  
+`;
 
   const newWindow = window.open('', '', 'width=600,height=400');
   newWindow.document.write('<html><head><title>Posada Chichén Itzá</title></head><body>');

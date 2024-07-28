@@ -12,8 +12,8 @@
             <h3 class="card-title">{{ product.name }}</h3>
             <p class="card-description">{{ product.description }}</p>
             <p class="card-price">Precio: ${{ product.price }}</p>
-            <button v-if="username === 'mesero' && isLogged" class="add-to-cart-button"
-              @click.stop="addToCart(product)">Añadir</button>
+            <button class="add-to-cart-button"
+              @click.stop="addToCart(product)">Añadir</button> <!--v-if="username === 'mesero' && isLogged"-->
           </div>
         </div>
       </div>
@@ -71,9 +71,9 @@
     </div>
   </div>
   <div v-if="!isCartEmpty">
-    <router-link v-if="username === 'mesero'" to="/confirm" class="floating-btn">
+    <router-link to="/confirm" class="floating-btn">
       Confirmar Pedido
-    </router-link>
+    </router-link> <!--v-if="username === 'mesero'" -->
   </div>
 </template>
 
