@@ -4,22 +4,27 @@
     <h1>{{ categoryName }}</h1>
     <Loading v-if="loading" />
     <div v-else>
-      <div v-if="filteredProducts.length" class="card-wrapper">
-        <div v-for="(product, index) in filteredProducts" :key="index" class="card" @click="expandImage(product.url)"
+      <div v-if="paginatedProducts.length" class="card-wrapper">
+        <div v-for="(product, index) in paginatedProducts" :key="index" class="card" @click="expandImage(product.url)"
           @contextmenu.prevent="showContextMenu($event, product)">
           <img :src="product.url" :alt="product.name" class="card-image">
           <div class="card-content">
             <h3 class="card-title">{{ product.name }}</h3>
             <p class="card-description">{{ product.description }}</p>
             <p class="card-price">Precio: ${{ product.price }}</p>
-            <button class="add-to-cart-button"
-              @click.stop="addToCart(product)">Añadir</button> <!--v-if="username === 'mesero' && isLogged"-->
+            <button v-if="username === 'mesero' && isLogged" class="add-to-cart-button" @click.stop="addToCart(product)">Añadir</button>
           </div>
         </div>
       </div>
       <div v-else>
         <p>No products available in this category.</p>
       </div>
+    </div>
+    <div class="pagination">
+      <button v-for="pageNum in Math.ceil(filteredProducts.length / productsPerPage)" :key="pageNum"
+        @click="changePage(pageNum)">
+        {{ pageNum }}
+      </button>
     </div>
     <!-- Expanded Image Overlay -->
     <div v-if="expandedImage" class="expanded-image-overlay" @click="closeExpandedImage">
@@ -34,7 +39,7 @@
       <img :src="expandedImage" alt="Expanded Product Image">
     </div>
     <!-- Context Menu -->
-    <div v-if="username === 'admin'">
+    <div v-if="username === 'admin' && isLogged">
       <div v-if="contextMenuVisible" :style="{ top: `${contextMenuY}px`, left: `${contextMenuX}px` }"
         class="context-menu">
         <ul>
@@ -71,9 +76,9 @@
     </div>
   </div>
   <div v-if="!isCartEmpty">
-    <router-link to="/confirm" class="floating-btn">
+    <router-link v-if="username === 'mesero' && isLogged" to="/confirm" class="floating-btn">
       Confirmar Pedido
-    </router-link> <!--v-if="username === 'mesero'" -->
+    </router-link>
   </div>
 </template>
 
@@ -108,16 +113,32 @@ const editFormVisible = ref(false);
 const editFormData = ref({});
 const selectedFile = ref(null);
 
+const page = ref(1);
+const productsPerPage = 12;
+const paginatedProducts = ref([]);
+
+const updatePaginatedProducts = () => {
+  const startIndex = (page.value - 1) * productsPerPage;
+  const endIndex = page.value * productsPerPage;
+  paginatedProducts.value = filteredProducts.value.slice(startIndex, endIndex);
+};
+
 const fetchProducts = async () => {
   try {
     const response = await axios.get(`${import.meta.env.VITE_API_URL}/categories/${categoryName}`);
     products.value = response.data;
     filteredProducts.value = response.data;
+    updatePaginatedProducts(); // Añade esta línea
   } catch (error) {
     console.error('Error fetching products:', error);
   } finally {
     loading.value = false;
   }
+};
+
+const changePage = (newPage) => {
+  page.value = newPage;
+  updatePaginatedProducts();
 };
 
 const addToCart = (product) => {
@@ -172,7 +193,7 @@ const handleContextMenuAction = (action) => {
     editFormData.value = { ...selectedProduct.value };
     editFormVisible.value = true;
   } else if (action === 'delete') {
-    const conf = confirm(`Are you sure you want to delete ${selectedProduct.value.name}?`);
+    const conf = confirm(`¿Eliminar ${selectedProduct.value.name}?`);
     if (conf) {
       deleteProduct(selectedProduct.value);
     }
@@ -182,7 +203,7 @@ const handleContextMenuAction = (action) => {
 const updateProduct = async () => {
   // Validar datos antes de enviar la solicitud  
   if (!editFormData.value.name || !editFormData.value.description || !editFormData.value.price) {
-    alert('Please fill in all required fields.');
+    alert('No se pueden dejar campos vacíos.');
     return;
   }
 
@@ -216,14 +237,15 @@ const updateProduct = async () => {
       }
     }
 
-    alert('Product updated successfully');
+    alert('Producto actualizado');
     editFormVisible.value = false;
   } catch (error) {
     console.error('Error editing product:', error);
     if (error.response) {
-      alert(`Error editing product: ${error.response.data.message}`);
+      //alert(`Error editing product: ${error.response.data.message}`);
+      alert("No se puede actualizar el producto.");
     } else {
-      alert('An unexpected error occurred.');
+      alert('Ocurrió un error inesperado.');
     }
   }
 };
@@ -233,16 +255,21 @@ const onFileChange = (event) => {
 };
 
 const deleteProduct = async (product) => {
-  try {
-    await axios.delete(`${import.meta.env.VITE_API_URL}/files/${product.filename}`);
-    products.value = products.value.filter(img => img.filename !== product.filename);
-    alert('Product deleted successfully');
-  } catch (error) {
-    console.error('Error deleting product:', error);
-    if (error.response) {
-      alert(`Error deleting product: ${error.response.data.message}`);
-    } else {
-      alert('An unexpected error occurred.');
+  const validar = confirm("¿Desea eliminar el producto?")
+
+  if (validar === true) {
+    try {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/files/${product.filename}`);
+      products.value = products.value.filter(img => img.filename !== product.filename);
+      //alert('Product deleted successfully');
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      if (error.response) {
+        //alert(`Error deleting product: ${error.response.data.message}`);
+        alert("No se pudo eliminar el producto.");
+      } else {
+        alert('Ocurrió un error inesperado.');
+      }
     }
   }
 };
@@ -262,6 +289,12 @@ const handleSearch = (query) => {
   } else {
     filteredProducts.value = products.value;
   }
+  resetPagination(); // Añade esta línea
+};
+
+const resetPagination = () => {
+  page.value = 1;
+  updatePaginatedProducts();
 };
 
 onMounted(() => {
@@ -484,6 +517,31 @@ onMounted(() => {
 .floating-btn:hover {
   background-color: #0056b3;
   animation: none;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.pagination button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px;
+  margin: 0 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.pagination button:hover {
+  background-color: #0056b3;
+}
+
+.pagination button.active {
+  background-color: #0056b3;
 }
 
 /* Media Query for small screens */
