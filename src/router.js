@@ -22,7 +22,7 @@ const routes = [
     path: '/',
     component: ElectionPage,
     meta: {
-      title: 'Location',
+      title: 'Ubicación',
       layout: HomeLayout
     }
   },
@@ -30,7 +30,7 @@ const routes = [
     path: '/digital-dine',
     component: ElectionPage,
     meta: {
-      title: 'Location',
+      title: 'Ubicación',
       layout: HomeLayout
     }
   },
@@ -38,7 +38,7 @@ const routes = [
     path: '/bar',
     component: BarPage,
     meta: {
-      title: 'Our bar',
+      title: 'Página del bar',
       layout: DefaultLayout
     }
   },
@@ -46,7 +46,7 @@ const routes = [
     path: '/restaurant',
     component: RestaurantPage,
     meta: {
-      title: 'Our restaurant',
+      title: 'Página del restaurant',
       layout: DefaultLayout
     }
   },
@@ -86,7 +86,7 @@ const routes = [
     path: '/confirm',
     component: ConfirmationPage,
     meta: {
-      title: 'Confirm your order',
+      title: 'Confirmar la orden',
       layout: DefaultLayout
     } 
   },
@@ -94,7 +94,7 @@ const routes = [
     path: '/orders',
     component: OrderPage,
     meta: {
-      title: 'Check orders',
+      title: 'Ver ordenes',
       layout: DefaultLayout
     } 
   },
@@ -102,7 +102,7 @@ const routes = [
     path: '/order',
     component: RegisterSalePage,
     meta: {
-      title: 'Check kitchen orders',
+      title: 'Ver ordenes de cocina',
       layout: DefaultLayout
     } 
   },
@@ -118,10 +118,10 @@ const routes = [
     path: '/restaurant/:categoryName',
     component: CategoriesPage,
     meta: {
-      title: 'Products',
+      title: 'Productos disponibles',
       layout: LayoutSimple
     }
-  },
+  }
 ]
 
 const router = createRouter({

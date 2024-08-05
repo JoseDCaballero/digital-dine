@@ -77,6 +77,8 @@ const removeOrder = async (orderIndex, recordSale = true) => {
       await axios.delete(import.meta.env.VITE_API_URL + `/orders/${orderIndex}`, {
         params: { record_sale_flag: recordSale },
       });
+      localStorage.removeItem(`order-${order.folio}-backgroundColor`);
+      localStorage.removeItem(`order-${order.folio}-newProductsMessage`);
       orders.value.splice(orderIndex, 1);
     } catch (error) {
       console.error("There was an error deleting the order:", error);
@@ -90,7 +92,7 @@ const updateOrder = async (folio, updatedOrder) => {
       items: updatedOrder.items.map(item => ({
         name: item.name,
         quantity: item.quantity,
-        price: item.price  // Agregar el campo de precio
+        price: item.price
       })),
       total: updatedOrder.total,
       total_price: updatedOrder.total_price,
@@ -99,6 +101,14 @@ const updateOrder = async (folio, updatedOrder) => {
       folio: updatedOrder.folio,
       additional_amount: updatedOrder.additional_amount
     });
+    // Aquí manejamos la actualización del color y mensaje en localStorage
+    const orderIndex = orders.value.findIndex(order => order.folio === folio);
+    if (orderIndex !== -1) {
+      orders.value[orderIndex].backgroundColor = '#f9f9f9';
+      orders.value[orderIndex].newProductsMessage = 'Es posible que se hayan agregado nuevos productos';
+      localStorage.setItem(`order-${folio}-backgroundColor`, '#f9f9f9');
+      localStorage.setItem(`order-${folio}-newProductsMessage`, 'Se agregaron nuevos productos');
+    }
     fetchOrders(); // Volver a cargar las órdenes para reflejar los cambios
   } catch (error) {
     console.error("There was an error updating the order:", error);

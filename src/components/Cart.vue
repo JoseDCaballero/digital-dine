@@ -129,8 +129,8 @@ const decrementQuantity = (item) => {
       </div>
       <p class="total">Total: ${{ total }}</p>
       <div class="buttons">
-        <button class="clear-cart-button" @click="clearCart">Delete cart</button>
-        <button class="order-button" @click="addOrder">Order</button>
+        <button class="clear-cart-button" @click="clearCart">Eliminar pedido</button>
+        <button class="order-button" @click="addOrder">Hacer pedido</button>
       </div>
     </div>
     <div v-else>
