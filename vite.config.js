@@ -8,7 +8,7 @@ export default defineConfig({
   plugins: [
     vue(),
   ],
-  base: 'https://josedcaballero.github.io/digital-dine/',
+  base: 'https://digitaldine.onrender.com/',
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
