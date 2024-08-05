@@ -130,7 +130,7 @@ const router = createRouter({
 })
 
 router.afterEach((to) => {
-  document.title = to.meta.title ?? 'DigitalMeal'
+  document.title = to.meta.title ?? 'DigitalDine'
 })
 
 export default router
