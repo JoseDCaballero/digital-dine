@@ -1,6 +1,6 @@
 <template>
   <h1 class="titulo">Subir bebidas</h1>
-  <div class="container">
+  <div v-if="loading" class="container">
     <div v-if="imagePreview" class="image-preview">
       <img :src="imagePreview" alt="Vista previa de la imagen" class="preview-img"/>
     </div>
@@ -15,17 +15,20 @@
     </div>
     <button @click="uploadFile" class="btnsubir">Subir</button>
   </div>
+  <Cargando v-else />
 </template>
 
 <script setup>
 import { ref } from 'vue';
 import axios from 'axios';
+import Cargando from '../components/Cargando.vue';
 
 const selectedFile = ref(null);
 const imagePreview = ref(null);
 const name = ref('');
 const description = ref('');
 const price = ref(0);
+const loading = ref(true)
 
 const onFileChange = (event) => {
   selectedFile.value = event.target.files[0];
@@ -39,7 +42,7 @@ const onFileChange = (event) => {
 };
 
 const uploadFile = async () => {
-  if (!selectedFile.value) {
+  if (!selectedFile.value || !name.value || !description.value || !price.value) {
     alert('Por favor, selecciona un archivo primero.');
     return;
   }
@@ -53,14 +56,15 @@ const uploadFile = async () => {
   let conf = confirm("¿Estás seguro de que deseas subir esta bebida?");
 
   if (conf) {
+    loading.value = false
     try {
       const response = await axios.post(import.meta.env.VITE_API_URL + '/bupload/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
-      alert("La bebida se subió correctamente");
-      console.log(response.data);
+      loading.value = true
+      alert("Producto subido exitosamente");
     } catch (error) {
       console.error('Error al subir la bebida:', error);
       alert('Error al subir la bebida');

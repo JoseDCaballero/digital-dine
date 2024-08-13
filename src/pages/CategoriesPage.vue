@@ -76,7 +76,7 @@
     </div>
   </div>
   <div v-if="!isCartEmpty">
-    <router-link v-if="username === 'mesero' || username === 'cocina' && isLogged" to="/confirm" class="floating-btn">
+    <router-link v-if="username === 'mesero' && isLogged" to="/confirm" class="floating-btn">
       Confirmar Pedido
     </router-link>
   </div>

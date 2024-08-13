@@ -1,6 +1,6 @@
 <template>  
   <div class="login-container">
-    <div class="login-card">
+    <div v-if="!loading" class="login-card">
       <h2>Login</h2>
       <form @submit.prevent="login">
         <div class="input-group">
@@ -14,6 +14,7 @@
         <button type="submit" class="login-button">Login</button>
       </form>
     </div>
+    <Cargando v-else />
   </div>
   <h3>Este apartado es solo para los administrativos del hotel.</h3>
 </template>
@@ -22,12 +23,15 @@
 import { ref } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+import Cargando from '../components/Cargando.vue';
 
 const router = useRouter();
 const username = ref('');
 const password = ref('');
+const loading = ref(false);  // Estado para controlar la carga
 
 const login = async () => {
+  loading.value = true;  // Mostrar el componente de carga
   try {
     const response = await axios.post(import.meta.env.VITE_API_URL + '/login', {
       username: username.value,
@@ -35,12 +39,13 @@ const login = async () => {
     });
 
     localStorage.setItem('token', response.data.token);
-    localStorage.setItem('username', response.data.username);
-    alert("Se ha iniciado sesión correctamente");
+    localStorage.setItem('username', response.data.username);    
     router.push("/")
   } catch (error) {
     console.error('Error:', error);
     alert('Error')
+  } finally {
+    loading.value = false;  // Ocultar el componente de carga
   }
 };
 </script>

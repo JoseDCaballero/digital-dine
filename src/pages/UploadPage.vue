@@ -1,6 +1,6 @@
 <template>
   <h1 class="titulo">Subir productos al restaurante</h1>
-  <div class="container">
+  <div v-if="loading" class="container">
     <div v-if="imagePreview" class="image-preview">
       <img :src="imagePreview" alt="Vista previa de la imagen" class="preview-img"/>
     </div>
@@ -19,11 +19,13 @@
     </div>
     <button @click="uploadFile" class="btn-upload">Subir</button>
   </div>
+  <Cargando v-else />
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+import Cargando from '../components/Cargando.vue';
 
 const categories = ref([]);
 const selectedFile = ref(null);
@@ -32,6 +34,7 @@ const name = ref('');
 const description = ref('');
 const price = ref(0);
 const category = ref('');
+const loading = ref(true)
 
 const handleFileUpload = (event) => {
   selectedFile.value = event.target.files[0];
@@ -60,14 +63,15 @@ const uploadFile = async () => {
   let val = confirm("¿Estás seguro de que deseas subir este producto?");
 
   if (val) {
+    loading.value = false
     try {
       const response = await axios.post(import.meta.env.VITE_API_URL + '/upload/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
-      alert("El producto se subió correctamente");
-      console.log(response.data);
+      loading.value = true
+      alert("Producto subido exitosamente");
     } catch (error) {
       console.error('Error uploading file:', error);
       alert('Error al subir el producto');

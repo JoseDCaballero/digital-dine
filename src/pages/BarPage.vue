@@ -4,8 +4,8 @@
     <h1>Bebidas disponibles</h1>
     <Load v-if="loading" />
     <div v-else>
-      <div v-if="filteredImages.length" class="card-wrapper">
-        <div v-for="(image, index) in filteredImages" :key="index" class="card" @click="expandImage(image.url)"
+      <div v-if="paginatedProducts.length" class="card-wrapper">
+        <div v-for="(image, index) in paginatedProducts" :key="index" class="card" @click="expandImage(image.url)"
           @contextmenu.prevent="showContextMenu($event, image)">
           <img :src="image.url" :alt="image.name" class="card-image">
           <div class="card-content">
@@ -20,6 +20,12 @@
       <div v-else>
         <p>No drinks available</p>
       </div>
+    </div>
+    <div class="pagination">
+      <button v-for="pageNum in Math.ceil(filteredImages.length / productsPerPage)" :key="pageNum"
+        :class="{ active: pageNum === page }" @click="changePage(pageNum)">
+        {{ pageNum }}
+      </button>
     </div>
     <!-- Expanded Image Overlay -->
     <div v-if="expandedImage" class="expanded-image-overlay" @click="closeExpandedImage">
@@ -69,7 +75,7 @@
     </div>
   </div>
   <div v-if="!isCartEmpty">
-    <router-link v-if="username === 'mesero'" to="/confirm" class="floating-btn">
+    <router-link v-if="username === 'mesero' && token" to="/confirm" class="floating-btn">
       Confirmar Pedido
     </router-link>
   </div>
@@ -88,33 +94,49 @@ const expandedImage = ref(null);
 const loading = ref(true);
 
 const filteredImages = ref([]);
+const paginatedProducts = ref([]);
 
 const cart = ref(JSON.parse(localStorage.getItem('cart')) || []);
 const isCartEmpty = ref(cart.value.length === 0);
-const updateCartStatus = () => {
-  isCartEmpty.value = cart.value.length === 0;
-};
 
 const contextMenuVisible = ref(false);
 const contextMenuX = ref(0);
 const contextMenuY = ref(0);
 const selectedImage = ref(null);
 
-// Nuevas variables para el formulario de edición
 const editFormVisible = ref(false);
 const editFormData = ref({});
 const selectedFile = ref(null);
+
+const page = ref(1);
+const productsPerPage = 12;
+
+const updateCartStatus = () => {
+  isCartEmpty.value = cart.value.length === 0;
+};
+
+const updatePaginatedProducts = () => {
+  const startIndex = (page.value - 1) * productsPerPage;
+  const endIndex = page.value * productsPerPage;
+  paginatedProducts.value = filteredImages.value.slice(startIndex, endIndex);
+};
 
 const fetchImages = async () => {
   try {
     const response = await axios.get(import.meta.env.VITE_API_URL + '/bfiles/');
     images.value = response.data;
     filteredImages.value = response.data;
+    updatePaginatedProducts();
   } catch (error) {
     console.error('Error fetching images:', error);
   } finally {
     loading.value = false;
   }
+};
+
+const changePage = (newPage) => {
+  page.value = newPage;
+  updatePaginatedProducts();
 };
 
 const addToCart = (image) => {
@@ -198,7 +220,6 @@ const updateImage = async () => {
       updatedImage.description = editFormData.value.description;
       updatedImage.price = editFormData.value.price;
       if (selectedFile.value) {
-        // Actualizar la URL de la imagen para evitar problemas de caché
         updatedImage.url = URL.createObjectURL(selectedFile.value);
       }
     }
@@ -223,15 +244,16 @@ const cancelEdit = () => {
   editFormVisible.value = false;
 };
 
-const handleSearch = (query) => {
-  if (query) {
-    filteredImages.value = images.value.filter(image =>
-      image.name.toLowerCase().includes(query.toLowerCase()) ||
-      image.description.toLowerCase().includes(query.toLowerCase())
-    );
+const handleSearch = (searchQuery) => {
+  if (searchQuery) {
+    filteredImages.value = images.value.filter(image => 
+    image.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    image.description.toLowerCase().includes(query.toLowerCase()));
   } else {
     filteredImages.value = images.value;
   }
+  page.value = 1;  // Reset to first page after search
+  updatePaginatedProducts();
 };
 
 onMounted(() => {
@@ -460,5 +482,42 @@ onMounted(() => {
   background-color: #0056b3;
   animation: none;
   /* Quitamos la animación al hacer hover */
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.pagination button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px;
+  margin: 0 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.pagination button:hover {
+  background-color: #0056b3;
+}
+
+.pagination button.active {
+  background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+  .card-wrapper {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .card-wrapper {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 </style>
