@@ -10,6 +10,7 @@ const isInTheBar = ref(false);
 const isInTheRest = ref(false);
 const tableNumber = ref(null);
 const clientName = ref(null);
+const comentario = ref('');
 
 const cartItems = computed(() => cart.value);
 const total = computed(() => cart.value.reduce((sum, item) => sum + item.price * item.quantity, 0));
@@ -43,7 +44,9 @@ const addOrder = async () => {
           table_number: parseInt(tableNumber.value),
           client_name: clientName.value || null,
           folio: null,
-          additional_amount: null // Este campo será calculado en el backend
+          additional_amount: null,
+        }, {
+          params: { comentarios: comentario.value.trim() || "Sin comentarios" }
         });
         alert("Orden tomada correctamente");
         router.push("/");
@@ -72,7 +75,10 @@ const addOrder = async () => {
           table_number: null,
           client_name: clientName.value,
           folio: null,
-          additional_amount: null // Este campo será calculado en el backend
+          additional_amount: null,
+          comentarios: comentario.value.trim() || "Sin comentarios"
+        }, {
+          params: { comentarios: comentario.value.trim() || "Sin comentarios" }
         });
         alert("Orden tomada correctamente");
         router.push("/");
@@ -127,6 +133,7 @@ const decrementQuantity = (item) => {
             id="mesa" v-model="tableNumber">
         </div>
       </div>
+      <input placeholder="Ingresa comentarios" type="text" id="comentarios" v-model="comentario">
       <p class="total">Total: ${{ total }}</p>
       <div class="buttons">
         <button class="clear-cart-button" @click="clearCart">Eliminar pedido</button>

@@ -9,7 +9,7 @@
           <p v-if="order.client_name">Nombre: {{ order.client_name }}</p>
           <ul>
             <li v-for="item in order.items" :key="item.name">
-              {{ item.quantity }} {{ item.name }} - ${{ item.price.toFixed(2) }}
+              {{ item.quantity }} {{ item.name }} - ${{ item.price.toFixed(2) }} {{ orders.comentarios }}
             </li>
           </ul>
           <p v-if="username === 'caja' && token">Folio: {{ order.folio }}</p>
@@ -64,7 +64,7 @@ const token = localStorage.getItem('token');
 const fetchOrders = async () => {
   try {
     const response = await axios.get(import.meta.env.VITE_API_URL + '/orders/');
-    orders.value = response.data;
+    orders.value = response.data;    
   } catch (error) {
     console.error("There was an error fetching the orders:", error);
   }

@@ -95,6 +95,7 @@ onUnmounted(() => {
             {{ item.quantity }} {{ item.name }}
           </li>
         </ul>
+        <p>Comentarios: {{ order.comentarios }}</p>
         <p v-if="order.newProductsMessage" class="new-products-message">{{ order.newProductsMessage }}</p>
         <button @click="colorIt(index)">Pedido terminado</button>
       </div>
