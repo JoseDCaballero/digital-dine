@@ -27,3 +27,7 @@ npm run dev
 ```sh
 npm run build
 ```
+###
+```sh
+see this project deploy in https://digitaldine.onrender.com
+```
