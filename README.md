@@ -27,3 +27,6 @@ npm run dev
 ```sh
 npm run build
 ```
+## Comments
+
+This is my first big project but it is not finished yet.
